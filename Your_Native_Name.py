@@ -114,4 +114,4 @@ elif format(last_name[0]) == ("Y") or format(last_name[0]) == ("y"):
 	Last_Native_Name = ("Yack")
 else: Last_Native_Name = ("Dead Beat")
 
-print ("Your Native American Name is", First_Native_Name, Last_Native_Name)
+print ("Your Native Name is", First_Native_Name, Last_Native_Name)
