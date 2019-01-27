@@ -1,9 +1,8 @@
 
 /**
- * Write a description of class GalToLit here.
+ *  GalToLit is supposed to convert your gallons to liters
  *
- * @author (your name)
- * @version (a version number or a date)
+ * @author David Bowser
  */
 public class GalToLit {
     public static void main(String arg[]) {
