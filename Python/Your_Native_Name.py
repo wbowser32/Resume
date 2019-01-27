@@ -26,7 +26,7 @@ elif format(first_name[0]) == ("I") or format(first_name[0]) == ("i"):
 elif format(first_name[0]) == ("J") or format(first_name[0]) == ("j"):
 	First_Native_Name = ("Jaded")
 elif format(first_name[0]) == ("K") or format(first_name[0]) == ("k"):
-	First_Native_Name = ("Kept")
+	First_Native_Name = ("Kooky")
 elif format(first_name[0]) == ("L") or format(first_name[0]) == ("l"):
 	First_Native_Name = ("Lost")
 elif format(first_name[0]) == ("M") or (format(first_name[0]) == "m"):
@@ -75,7 +75,7 @@ elif format(last_name[0]) == ("E") or format(last_name[0]) == ("e"):
 elif format(last_name[0]) == ("F") or format(last_name[0]) == ("f"):
 	Last_Native_Name = ("Flower")
 elif format(last_name[0]) == ("G") or format(last_name[0]) == ("g"):
-	Last_Native_Name = ("Gas")
+	Last_Native_Name = ("Goat")
 elif format(last_name[0]) == ("H") or format(last_name[0]) == ("h"):
 	Last_Native_Name = ("Hawk")
 elif format(last_name[0]) == ("I") or format(last_name[0]) == ("i"):
@@ -101,7 +101,7 @@ elif format(last_name[0]) == ("R") or format(last_name[0]) == ("r"):
 elif format(last_name[0]) == ("S") or format(last_name[0]) == ("s"):
 	Last_Native_Name = ("Sloth")
 elif format(last_name[0]) == ("T") or format(last_name[0]) == ("t"):
-	Last_Native_Name = ("Trash Panada")
+	Last_Native_Name = ("Turtle")
 elif format(last_name[0]) == ("U") or format(last_name[0]) == ("u"):
 	Last_Native_Name = ("Urchin")
 elif format(last_name[0]) == ("V") or format(last_name[0]) == ("v"):
@@ -112,6 +112,6 @@ elif format(last_name[0]) ==("X") or format(last_name[0]) == ("x"):
 	Last_Native_Name = ("Shoulder Shrug")
 elif format(last_name[0]) == ("Y") or format(last_name[0]) == ("y"):
 	Last_Native_Name = ("Yack")
-else: Last_Native_Name = ("Dead Beat")
+else: Last_Native_Name = ("Zebra")
 
-print ("Your Native American Name is", First_Native_Name, Last_Native_Name)
+print ("Your Native Name is", First_Native_Name, Last_Native_Name)
