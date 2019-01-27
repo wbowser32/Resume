@@ -1,6 +1,6 @@
 
 /**
- *  GalToLit is supposed to convert your gallons to liters
+ *  GalToLit is supposed to give you a table for converting your gallons to liters
  *
  * @author David Bowser
  */
