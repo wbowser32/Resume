@@ -1,0 +1,69 @@
+Rem Attribute VBA_ModuleType=VBAModule
+Option VBASupport 1
+Sub SendOutFiles()
+
+Dim EBody As String
+Dim Table As String
+Dim Signature As String
+Dim Names As String
+Dim Sites As String
+
+Dim Mail_Object
+Dim OutApp
+
+With ActiveSheet
+    lastrow = .Cells(.Rows.Count, "A").End(xlUp).Row
+End With
+
+
+For i = 1 To lastrow
+
+
+If IsEmpty(Cells(i, 1).Value) = True Then
+
+Do
+
+i = i + 1
+
+Loop While IsEmpty(Cells(i, 1).Value) = True
+End If
+
+Names = Cells(i, 4).Value
+Sites = Cells(i, 5).Value
+
+EBody = "Hello PTMF," & "<br />" & "<br />" & "Could you, please, file this into your system? That would be greatly appreciated." & "<br />" _
+& "<br />" & "<Table Border> <TR> <TH>PI Name</TH> <TH>Site</TH> </TR> </Table>" & Names & " - " & Sites & "<br />" & "<br/>" & "Thank You," & "<br />" & "<br />" & "David"
+
+
+
+Signature = Environ("appdata") & "\Microsoft\Signatures\Icon Title.txt"
+If Dir(Signature, vbDirectory) <> vbNullString Then
+Signature = Signature & Dir$(Signature & "*.htm")
+Else
+Signature = ""
+End If
+Signature = CreateObject("Scripting.FileSystemObject").GetFile(Signature).OpenAsTextStream(1, -2).ReadAll
+
+
+Set Mail_Object = CreateObject("Outlook.Application")
+Set OutApp = Mail_Object.CreateItem(0)
+
+    With OutApp
+    .Subject = Cells(i, 1).Value
+    .HTMLBody = EBody & "<br />" & "<br />" & Signature
+    .To = Cells(i, 3).Value
+    .CC = ""
+    If IsEmpty(Cells(i, 2).Value) = False Then
+    .Attachments.Add Cells(i, 2).Value
+    End If
+    .Send
+    
+
+End With
+
+Next i
+
+debugs:
+If Err.Description <> "" Then MsgBox Err.Description
+End Sub
+
