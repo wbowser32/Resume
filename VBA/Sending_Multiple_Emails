@@ -7,6 +7,7 @@ Dim Table As String
 Dim Signature As String
 Dim Names As String
 Dim Sites As String
+Dim lastrow as Long
 
 Dim Mail_Object
 Dim OutApp
