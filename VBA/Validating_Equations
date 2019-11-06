@@ -1,0 +1,131 @@
+Option Explicit
+Sub Validating()
+
+
+Dim MultiLines As Range
+Dim UnitCost As Range
+Dim OrderCost As Range
+Dim Quantity As Range
+Dim ItemCount As Range
+Dim UomCount As Range
+Dim StaplesNet As Range
+Dim NetMargin As Range
+Dim StaplesPo As Range
+Dim PoMargin As Range
+Dim EssNet As Range
+Dim EssMargin As Range
+Dim SprNet As Range
+Dim SprMargin As Range
+Dim OrderMarginTotal As Range
+Dim OrderMarginPercent As Range
+Dim i
+Dim lastrow As Long
+
+
+With ActiveSheet
+        lastrow = .Cells(.Rows.Count, "A").End(xlUp).Row
+End With
+
+For i = 2 To lastrow
+
+If IsEmpty(Cells(i, 1).Value) = True Then
+
+Do
+
+i = i + 1
+
+Loop While IsEmpty(Cells(i, 1).Value) = True
+
+End If
+
+Set OrderMarginPercent = Cells(i, 7)
+Set MultiLines = Cells(i, 8)
+Set OrderMarginTotal = Cells(i, 10)
+Set UnitCost = Cells(i, 13)
+Set OrderCost = Cells(i, 14)
+Set Quantity = Cells(i, 15)
+Set ItemCount = Cells(i, 17)
+Set UomCount = Cells(i, 18)
+Set StaplesNet = Cells(i, 20)
+Set NetMargin = Cells(i, 21)
+Set StaplesPo = Cells(i, 23)
+Set PoMargin = Cells(i, 24)
+Set EssNet = Cells(i, 28)
+Set EssMargin = Cells(i, 29)
+Set SprNet = Cells(i, 32)
+Set SprMargin = Cells(i, 33)
+
+
+
+OrderMarginPercent.FormulaR1C1 = "=IF(RC[-2] = ""Y"", -RC[-1],RC[-1])"
+MultiLines.FormulaR1C1 = "=IF(LEN(TRIM(RC[-4]))-LEN(SUBSTITUTE(TRIM(RC[-4]),"","","""")) > 2, ""Y"",""N"")"
+OrderMarginTotal.FormulaR1C1 = "=IF(RC[-5] = ""Y"", -RC[-1],RC[-1])"
+UnitCost.FormulaR1C1 = "=LEFT(RIGHT(RC[-1],LEN(RC[-1])-FIND(""$"",RC[-1])),LEN(RIGHT(RC[-1],LEN(RC[-1])-FIND(""$"",RC[-1]))-2))"
+OrderCost.FormulaR1C1 = "=ROUND(RC[-3]/(1+(RC[-7]/100)),2)"
+Quantity.FormulaR1C1 = "=ROUND(RC[-1]/RC[-2],1)"
+ItemCount.FormulaR1C1 = "=removeSpecial(LEFT(RC[-1],LEN(RC[-1])-2))"
+UomCount.FormulaR1C1 = "=RIGHT(RC[-2],2)"
+StaplesNet.FormulaR1C1 = "=RC[-5]*RC[-1]"
+NetMargin.FormulaR1C1 = "=IF(RC[-2]=0,"""",1-(RC[-1]/RC[-10]))"
+StaplesPo.FormulaR1C1 = "=RC[-1]*RC[-8]"
+PoMargin.FormulaR1C1 = "=IF(RC[-2]=0,"""",1-(RC[-1]/RC[-13]))"
+EssNet.FormulaR1C1 = "=RC[-2]*RC[-13]"
+EssMargin.FormulaR1C1 = "=IF(RC[-3]=0,"""",1-(RC[-1]/RC[-18]))"
+SprNet.FormulaR1C1 = "=RC[-2]*RC[-17]"
+SprMargin.FormulaR1C1 = "=IF(RC[-3]=0,"""",1-(RC[-1]/RC[-22]))"
+
+
+  'Definining the variables:
+  Dim rng As Range
+  Dim rng2 As Range
+  Dim rng3 As Range
+  Dim rng4 As Range
+  Dim condition As FormatCondition
+  Dim condition2 As FormatCondition
+  Dim condition3 As FormatCondition
+  Dim condition4 As FormatCondition
+ 'Fixing/Setting the range on which conditional formatting is to be desired
+  Set rng = Range("U:U")
+  Set rng2 = Range("X:X")
+  Set rng3 = Range("AC:AC")
+  Set rng4 = Range("AG:AG")
+  'To delete/clear any existing conditional formatting from the range
+   rng.FormatConditions.Delete
+   rng2.FormatConditions.Delete
+   rng3.FormatConditions.Delete
+   rng4.FormatConditions.Delete
+  'Defining and setting the criteria for each conditional format
+   Set condition = rng.FormatConditions.Add(xlCellValue, xlLess, "=.3")
+    Set condition2 = rng2.FormatConditions.Add(xlCellValue, xlLess, "=.3")
+    Set condition3 = rng3.FormatConditions.Add(xlCellValue, xlLess, "=.3")
+    Set condition3 = rng4.FormatConditions.Add(xlCellValue, xlLess, "=.3")
+   'Defining and setting the format to be applied for each condition
+
+   With condition
+     .Font.Color = vbRed
+      .Font.Bold = True
+   End With
+   With condition2
+     .Font.Color = vbRed
+      .Font.Bold = True
+   End With
+   With condition3
+     .Font.Color = vbRed
+      .Font.Bold = True
+   End With
+
+Next i
+
+Range("Q2").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Copy
+Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+    :=False, Transpose:=False
+With Selection
+    .NumberFormat = "General"
+    .Value = .Value
+End With
+
+Range("AM2").Select
+
+End Sub
