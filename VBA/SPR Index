@@ -1,0 +1,119 @@
+Option Explicit
+Sub SPR()
+
+Dim Staples As Range
+Dim StaplesR As Range
+Dim Staples2 As Range
+Dim Staples2R As Range
+Dim Staples3 As Range
+Dim Staples3R As Range
+Dim Staples4 As Range
+Dim Staples4R As Range
+Dim Variable As String
+Dim Variable2 As String
+Dim VariableR As Range
+Dim Variable2R As Range
+Dim Variable3 As String
+Dim Variable3R As Range
+Dim Variable4 As String
+Dim Variable4R As Range
+Dim StaplesS As String
+Dim Staples2S As String
+Dim Staples3S As String
+Dim Staples4S As String
+Dim Filename As String
+Dim sFile As String
+Dim wb As Workbook
+Dim wb2 As Workbook
+Dim i
+Dim lastrow As Long
+Dim SKUcells As Range
+
+Application.ScreenUpdating = False
+
+
+  With Application.FileDialog(msoFileDialogFilePicker)
+        'Makes sure the user can select only one file
+        .AllowMultiSelect = False
+        'Filter to just the following types of files to narrow down selection options
+        .Filters.Add "Excel Files", "*.xlsx; *.xlsm; *.xls; *.xlsb", 1
+        'Show the dialog box
+        If .Show = -1 Then
+        'Store in fullpath variable
+        sFile = .SelectedItems.Item(1)
+        Else
+        Exit Sub
+        End If
+    End With
+   
+'sFile = "C:\Users\BowDa001\Desktop\Local Kount\SPR Net Pricing.xlsx"
+
+Set wb = Workbooks.Open(sFile)
+
+Workbooks("Kount_Analysis_Worksheet(Real) (version 1).xlsm").Activate
+
+With ActiveSheet
+        lastrow = .Cells(.Rows.Count, "A").End(xlUp).Row
+End With
+
+For i = 2 To lastrow
+
+If IsEmpty(Cells(i, 1).Value) = True Then
+
+Do
+
+i = i + 1
+
+Loop While IsEmpty(Cells(i, 1).Value) = True
+
+End If
+
+
+Set Staples = wb.Worksheets(1).Range("A:AK").Find("Final SPR NET")
+Set StaplesR = Staples.EntireColumn
+Variable = StaplesR.Address(External:=True)
+Set VariableR = Range(Variable)
+
+Set Staples2 = wb.Worksheets(1).Range("A:AK").Find("Stock Number")
+Set Staples2R = Staples2.EntireColumn
+Variable2 = Staples2R.Address(External:=True)
+Set Variable2R = Range(Variable2)
+
+'Set Staples3 = wb.Worksheets(1).Range("A:AK").Find("PO Cost")
+'Set Staples3R = Staples3.EntireColumn
+'Variable3 = Staples3R.Address(External:=True)
+'Set Variable3R = Range(Variable3)
+
+Set Staples4 = wb.Worksheets(1).Range("A:AK").Find("SPR selling unit of measure (SUOM)")
+Set Staples4R = Staples4.EntireColumn
+Variable4 = Staples4R.Address(External:=True)
+Set Variable4R = Range(Variable4)
+
+
+Set SKUcells = Cells(i, 17)
+
+If Application.WorksheetFunction.CountIf(Variable2R, SKUcells) = 1 And ThisWorkbook.ActiveSheet.Cells(i, 19).Value = 0 And ThisWorkbook.ActiveSheet.Cells(i, 26).Value = 0 Then
+
+StaplesS = Application.WorksheetFunction.Index(VariableR, Application.Match(SKUcells, Variable2R, 0))
+'Staples2S = Application.WorksheetFunction.Index(Variable3R, Application.Match(SKUcells, Variable2R, 0))
+Staples3S = Application.WorksheetFunction.Index(Variable4R, Application.Match(SKUcells, Variable2R, 0))
+
+ThisWorkbook.ActiveSheet.Cells(i, 30).Value = StaplesS
+'ThisWorkbook.ActiveSheet.Cells(i, 22).Value = Staples2S
+ThisWorkbook.ActiveSheet.Cells(i, 31).Value = Staples3S
+
+Else
+
+ThisWorkbook.ActiveSheet.Cells(i, 30).Value = 0
+'ThisWorkbook.ActiveSheet.Cells(i, 22).Value = 0
+ThisWorkbook.ActiveSheet.Cells(i, 31).Value = 0
+
+End If
+
+Next i
+
+wb.Close SaveChanges:=False
+Application.ScreenUpdating = True
+
+
+End Sub
