@@ -1,0 +1,136 @@
+Option Explicit
+Sub Kount()
+
+Dim sFile As String
+Dim wb As Workbook
+Dim Dates As Range
+Dim Tran As Range
+Dim MarketPlaceOrderNo As Range
+Dim VendorPartNumber As Range
+Dim Negative As Range
+Dim OrderMarginPercent As Range
+Dim OrderMarginTotal As Range
+Dim OrderSubTotal As Range
+Dim Cost As Range
+Dim SellingUnitOfMeasurement As Range
+
+
+Application.ScreenUpdating = False
+
+  With Application.FileDialog(msoFileDialogFilePicker)
+        'Makes sure the user can select only one file
+        .AllowMultiSelect = False
+        .Title = "Select a folder then hit OK"
+        'Filter to just the following types of files to narrow down selection options
+        .Filters.Add "Excel Files", "*.xlsx; *.xlsm; *.xls; *.xlsb", 1
+        'Show the dialog box
+        If .Show = -1 Then
+        'Store in fullpath variable
+        sFile = .SelectedItems.Item(1)
+        Else
+        Exit Sub
+        End If
+    End With
+    
+Rows("2:2").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.ClearContents
+
+Set wb = Workbooks.Open(sFile)
+
+Set Dates = wb.Worksheets(1).Range("A:A")
+Set Tran = wb.Worksheets(1).Range("C:C")
+Set MarketPlaceOrderNo = wb.Worksheets(1).Range("F:F")
+Set VendorPartNumber = wb.Worksheets(1).Range("W:W")
+Set Negative = wb.Worksheets(1).Range("X:X")
+Set OrderMarginPercent = wb.Worksheets(1).Range("AA:AA")
+Set OrderMarginTotal = wb.Worksheets(1).Range("AB:AB")
+Set OrderSubTotal = wb.Worksheets(1).Range("AD:AD")
+Set Cost = wb.Worksheets(1).Range("AE:AE")
+Set SellingUnitOfMeasurement = wb.Worksheets(1).Range("AF:AF")
+
+Dates.Select
+Selection.Copy
+Workbooks("Kount_Analysis_Worksheet(Real) (version 1).xlsm").Activate
+Range("A1").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+wb.Activate
+
+Tran.Select
+Selection.Copy
+Workbooks("Kount_Analysis_Worksheet(Real) (version 1).xlsm").Activate
+Range("B1").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+wb.Activate
+        
+MarketPlaceOrderNo.Select
+Selection.Copy
+Workbooks("Kount_Analysis_Worksheet(Real) (version 1).xlsm").Activate
+Range("C1").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+wb.Activate
+
+VendorPartNumber.Select
+Selection.Copy
+Workbooks("Kount_Analysis_Worksheet(Real) (version 1).xlsm").Activate
+Range("D1").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+wb.Activate
+
+Negative.Select
+Selection.Copy
+Workbooks("Kount_Analysis_Worksheet(Real) (version 1).xlsm").Activate
+Range("E1").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+wb.Activate
+
+OrderMarginPercent.Select
+Selection.Copy
+Workbooks("Kount_Analysis_Worksheet(Real) (version 1).xlsm").Activate
+Range("F1").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+wb.Activate
+
+OrderMarginTotal.Select
+Selection.Copy
+Workbooks("Kount_Analysis_Worksheet(Real) (version 1).xlsm").Activate
+Range("I1").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+wb.Activate
+
+OrderSubTotal.Select
+Selection.Copy
+Workbooks("Kount_Analysis_Worksheet(Real) (version 1).xlsm").Activate
+Range("K1").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+wb.Activate
+
+
+Cost.Select
+Selection.Copy
+Workbooks("Kount_Analysis_Worksheet(Real) (version 1).xlsm").Activate
+Range("L1").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+wb.Activate
+
+SellingUnitOfMeasurement.Select
+Selection.Copy
+Workbooks("Kount_Analysis_Worksheet(Real) (version 1).xlsm").Activate
+Range("P1").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+
+
+wb.Close SaveChanges:=False
+Application.ScreenUpdating = True
+
+End Sub
