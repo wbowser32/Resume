@@ -1,0 +1,9 @@
+Function removeSpecial(sInput As String) As String
+    Dim sSpecialChars As String
+    Dim i As Long
+    sSpecialChars = "\/:*?""<>|-_,"
+    For i = 1 To Len(sSpecialChars)
+        sInput = Replace$(sInput, Mid$(sSpecialChars, i, 1), "")
+    Next
+    removeSpecial = sInput
+End Function
