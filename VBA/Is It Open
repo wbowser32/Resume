@@ -1,0 +1,13 @@
+Option Explicit
+
+Function AlreadyOpen(sFname As String) As Boolean
+
+Dim wbk As Workbook
+
+AlreadyOpen = True
+
+On Error Resume Next
+Set wbk = Workbooks(sFname)
+If wbk Is Nothing Then AlreadyOpen = False
+
+End Function
