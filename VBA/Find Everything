@@ -1,0 +1,735 @@
+Option Explicit
+
+Sub StaplesInformation()
+'
+' StaplesInformation Macros
+'For the poor soul who has to look at my code, I am still new to VBA.
+'Don't try to do a loop. The file is too big and it WILL crash computers.
+
+
+Dim Sku As Range
+Dim Model As Range
+Dim Po As Range
+Dim Net As Range
+Dim Div As Range
+Dim DivName As Range
+Dim Dept As Range
+Dim DeptName As Range
+Dim Class As Range
+Dim ClassName As Range
+Dim SkuDesc As Range
+Dim PoCost As Range
+Dim List As Range
+Dim Uom As Range
+Dim Uomq As Range
+Dim Carton As Range
+Dim Weight As Range
+Dim Length As Range
+Dim Height As Range
+Dim Width As Range
+Dim UPC As Range
+Dim VendorNum As Range
+Dim Vendor As Range
+Dim SourceIND As Range
+Dim FcOh As Range
+Dim Dropship As Range
+Dim Wholesale As Range
+Dim Recycled As Range
+Dim Minority As Range
+Dim SkuR As Range
+Dim ModelR As Range
+Dim PoR As Range
+Dim NetR As Range
+Dim DivR As Range
+Dim DivNameR As Range
+Dim DeptR As Range
+Dim DeptNameR As Range
+Dim ClassR As Range
+Dim ClassNameR As Range
+Dim SkuDescR As Range
+Dim PoCostR As Range
+Dim ListR As Range
+Dim UomR As Range
+Dim UomqR As Range
+Dim CartonR As Range
+Dim WeightR As Range
+Dim LengthR As Range
+Dim HeightR As Range
+Dim WidthR As Range
+Dim UPCR As Range
+Dim VendorNumR As Range
+Dim VendorR As Range
+Dim SourceINDR As Range
+Dim FcOhR As Range
+Dim DropshipR As Range
+Dim WholesaleR As Range
+Dim RecycledR As Range
+Dim MinorityR As Range
+Dim Variable As String
+Dim VariableM As String
+Dim VariableP As String
+Dim VariableN As String
+Dim VariableDiv As String
+Dim VariableDivN As String
+Dim VariableDept As String
+Dim VariableDeptN As String
+Dim VariableClass As String
+Dim VariableClassN As String
+Dim VariableSkuD As String
+Dim VariablePoC As String
+Dim VariableLP As String
+Dim VariableUOM As String
+Dim VariableUOMQ As String
+Dim VariableCQt As String
+Dim VariableW As String
+Dim VariableL As String
+Dim VariableH As String
+Dim VariableWid As String
+Dim VariableUPC As String
+Dim VariableVN As String
+Dim VariableV As String
+Dim VariableSIND As String
+Dim VariableFcOh As String
+Dim VariableDrop As String
+Dim VariableWhole As String
+Dim VariableRF As String
+Dim VariableMC As String
+Dim VariableR As Range
+Dim VariableMR As Range
+Dim VariablePoR As Range
+Dim VariableNetR As Range
+Dim VariableDivR As Range
+Dim VariableDivNR As Range
+Dim VariableDeptR As Range
+Dim VariableDeptNR As Range
+Dim VariableClassR As Range
+Dim VariableClassNR As Range
+Dim VariableSkuDR As Range
+Dim VariablePoCR As Range
+Dim VariableLPR As Range
+Dim VariableUOMR As Range
+Dim VariableUOMQR As Range
+Dim VariableCQtR As Range
+Dim VariableWR As Range
+Dim VariableLR As Range
+Dim VariableHR As Range
+Dim VariableWidR As Range
+Dim VariableUPCR As Range
+Dim VariableVNR As Range
+Dim VariableVR As Range
+Dim VariableSINDR As Range
+Dim VariableFcOhR As Range
+Dim VariableDropR As Range
+Dim VariableWholeR As Range
+Dim VariableRFR As Range
+Dim VariableMCR As Range
+Dim Sku1 As String
+Dim Model1 As String
+Dim Po1 As String
+Dim Net1 As String
+Dim Div1 As String
+Dim DivName1 As String
+Dim Dept1 As String
+Dim DeptName1 As String
+Dim Class1 As String
+Dim ClassName1 As String
+Dim SkuDesc1 As String
+Dim PoCost1 As String
+Dim List1 As String
+Dim Uom1 As String
+Dim Uomq1 As String
+Dim Carton1 As String
+Dim Weight1 As String
+Dim Length1 As String
+Dim Height1 As String
+Dim Width1 As String
+Dim UPC1 As String
+Dim VendorNum1 As String
+Dim Vendor1 As String
+Dim SourceIND1 As String
+Dim FcOh1 As String
+Dim Dropship1 As String
+Dim Wholesale1 As String
+Dim Recycled1 As String
+Dim Minority1 As String
+Dim Sku2 As String
+Dim Model2 As String
+Dim Po2 As String
+Dim Net2 As String
+Dim Div2 As String
+Dim DivName2 As String
+Dim Dept2 As String
+Dim DeptName2 As String
+Dim Class2 As String
+Dim ClassName2 As String
+Dim SkuDesc2 As String
+Dim PoCost2 As String
+Dim List2 As String
+Dim Uom2 As String
+Dim Uomq2 As String
+Dim Carton2 As String
+Dim Weight2 As String
+Dim Length2 As String
+Dim Height2 As String
+Dim Width2 As String
+Dim UPC2 As String
+Dim VendorNum2 As String
+Dim Vendor2 As String
+Dim SourceIND2 As String
+Dim FcOh2 As String
+Dim Dropship2 As String
+Dim Wholesale2 As String
+Dim Recycled2 As String
+Dim Minority2 As String
+
+Application.ScreenUpdating = False
+
+Set Sku = Worksheets("Sheet1").Range("A:AK").Find("SKU Number")
+Set Model = Worksheets("Sheet1").Range("A:AK").Find("Model")
+Set Po = Worksheets("Sheet1").Range("A:AK").Find("PO Cost")
+Set Net = Worksheets("Sheet1").Range("A:AK").Find("Net Cost")
+Set Div = Worksheets("Sheet1").Range("A:AK").Find("Div")
+Set DivName = Worksheets("Sheet1").Range("A:AK").Find("Div Name")
+Set Dept = Worksheets("Sheet1").Range("A:AK").Find("Dept")
+Set DeptName = Worksheets("Sheet1").Range("A:AK").Find("Dept Name")
+Set Class = Worksheets("Sheet1").Range("A:AK").Find("Class")
+Set ClassName = Worksheets("Sheet1").Range("A:AK").Find("Class Name")
+Set SkuDesc = Worksheets("Sheet1").Range("A:AK").Find("SKU Desc")
+Set PoCost = Worksheets("Sheet1").Range("A:AK").Find("PO Cost Change")
+Set List = Worksheets("Sheet1").Range("A:AK").Find("List Price")
+Set Uom = Worksheets("Sheet1").Range("A:AK").Find("UOM")
+Set Uomq = Worksheets("Sheet1").Range("A:AK").Find("UOMQ")
+Set Carton = Worksheets("Sheet1").Range("A:AK").Find("Carton QTY")
+Set Weight = Worksheets("Sheet1").Range("A:AK").Find("Weight")
+Set Length = Worksheets("Sheet1").Range("A:AK").Find("Length")
+Set Height = Worksheets("Sheet1").Range("A:AK").Find("Height")
+Set Width = Worksheets("Sheet1").Range("A:AK").Find("Width")
+Set UPC = Worksheets("Sheet1").Range("A:AK").Find("UPC")
+Set VendorNum = Worksheets("Sheet1").Range("A:AK").Find("Vendor Num")
+Set Vendor = Worksheets("Sheet1").Range("A:AK").Find("Vendor")
+Set SourceIND = Worksheets("Sheet1").Range("A:AK").Find("Sourceable IND")
+Set FcOh = Worksheets("Sheet1").Range("A:AK").Find("FC OH")
+Set Dropship = Worksheets("Sheet1").Range("A:AK").Find("Drop Ship IND")
+Set Wholesale = Worksheets("Sheet1").Range("A:AK").Find("Wholesaler IND")
+Set Recycled = Worksheets("Sheet1").Range("A:AK").Find("Recycled Flag")
+Set Minority = Worksheets("Sheet1").Range("A:AK").Find("Minority Code")
+Set SkuR = Sku.EntireColumn
+Set ModelR = Model.EntireColumn
+Set PoR = Po.EntireColumn
+Set NetR = Net.EntireColumn
+Set DivR = Div.EntireColumn
+Set DivNameR = DivName.EntireColumn
+Set DeptR = Dept.EntireColumn
+Set DeptNameR = DeptName.EntireColumn
+Set ClassR = Class.EntireColumn
+Set ClassNameR = ClassName.EntireColumn
+Set SkuDescR = SkuDesc.EntireColumn
+Set PoCostR = PoCost.EntireColumn
+Set ListR = List.EntireColumn
+Set UomR = Uom.EntireColumn
+Set UomqR = Uomq.EntireColumn
+Set CartonR = Carton.EntireColumn
+Set WeightR = Weight.EntireColumn
+Set LengthR = Length.EntireColumn
+Set HeightR = Height.EntireColumn
+Set WidthR = Width.EntireColumn
+Set UPCR = UPC.EntireColumn
+Set VendorNumR = VendorNum.EntireColumn
+Set VendorR = Vendor.EntireColumn
+Set SourceINDR = SourceIND.EntireColumn
+Set FcOhR = FcOh.EntireColumn
+Set DropshipR = Dropship.EntireColumn
+Set WholesaleR = Wholesale.EntireColumn
+Set RecycledR = Recycled.EntireColumn
+Set MinorityR = Minority.EntireColumn
+Variable = SkuR.Address(External:=True)
+VariableM = ModelR.Address(External:=True)
+VariableP = PoR.Address(External:=True)
+VariableN = NetR.Address(External:=True)
+VariableDiv = DivR.Address(External:=True)
+VariableDivN = DivNameR.Address(External:=True)
+VariableDept = DeptR.Address(External:=True)
+VariableDeptN = DeptNameR.Address(External:=True)
+VariableClass = ClassR.Address(External:=True)
+VariableClassN = ClassNameR.Address(External:=True)
+VariableSkuD = SkuDescR.Address(External:=True)
+VariablePoC = PoCostR.Address(External:=True)
+VariableLP = ListR.Address(External:=True)
+VariableUOM = UomR.Address(External:=True)
+VariableUOMQ = UomqR.Address(External:=True)
+VariableCQt = CartonR.Address(External:=True)
+VariableW = WeightR.Address(External:=True)
+VariableL = LengthR.Address(External:=True)
+VariableH = HeightR.Address(External:=True)
+VariableWid = WidthR.Address(External:=True)
+VariableUPC = UPCR.Address(External:=True)
+VariableVN = VendorNumR.Address(External:=True)
+VariableV = VendorR.Address(External:=True)
+VariableSIND = SourceINDR.Address(External:=True)
+VariableFcOh = FcOhR.Address(External:=True)
+VariableDrop = DropshipR.Address(External:=True)
+VariableWhole = WholesaleR.Address(External:=True)
+VariableRF = RecycledR.Address(External:=True)
+VariableMC = MinorityR.Address(External:=True)
+Set VariableR = Range(Variable)
+Set VariableMR = Range(VariableM)
+Set VariablePoR = Range(VariableP)
+Set VariableNetR = Range(VariableN)
+Set VariableDivR = Range(VariableDiv)
+Set VariableDivNR = Range(VariableDivN)
+Set VariableDeptR = Range(VariableDept)
+Set VariableDeptNR = Range(VariableDeptN)
+Set VariableClassR = Range(VariableClass)
+Set VariableClassNR = Range(VariableClassN)
+Set VariableSkuDR = Range(VariableSkuD)
+Set VariablePoCR = Range(VariablePoC)
+Set VariableLPR = Range(VariableLP)
+Set VariableUOMR = Range(VariableUOM)
+Set VariableUOMQR = Range(VariableUOMQ)
+Set VariableCQtR = Range(VariableCQt)
+Set VariableWR = Range(VariableW)
+Set VariableLR = Range(VariableL)
+Set VariableHR = Range(VariableH)
+Set VariableWidR = Range(VariableWid)
+Set VariableUPCR = Range(VariableUPC)
+Set VariableVNR = Range(VariableVN)
+Set VariableVR = Range(VariableV)
+Set VariableSINDR = Range(VariableSIND)
+Set VariableFcOhR = Range(VariableFcOh)
+Set VariableDropR = Range(VariableDrop)
+Set VariableWholeR = Range(VariableWhole)
+Set VariableRFR = Range(VariableRF)
+Set VariableMCR = Range(VariableMC)
+
+On Error GoTo Boi
+
+
+ActiveSheet.Pictures.Delete
+
+
+        Worksheets("Sheet1").Select
+        ModelR.Select
+        Selection.Replace What:="\", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+        Selection.Replace What:="/", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+        Selection.Replace What:=".", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+        Selection.Replace What:="-", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+        Selection.Replace What:="_", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+        Selection.Replace What:=",", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+        Selection.Replace What:=" ", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+        Worksheets("Sheet2").Select
+
+    If IsEmpty(Worksheets("Sheet2").Range("C1").Value) = True And IsEmpty(Worksheets("Sheet2").Range("C2").Value) = True Then
+        
+        Worksheets("Sheet2").Range("C5:C34").Select
+        Selection.ClearContents
+        Worksheets("Sheet2").Range("I5").Select
+        MsgBox "Cell C1 & C2 are Blank. Please fill it in one of these cells."
+        
+    
+    ElseIf IsEmpty(Worksheets("Sheet2").Range("C1").Value) = False And IsEmpty(Worksheets("Sheet2").Range("C2").Value) = True Then
+
+    
+    If Application.WorksheetFunction.CountIf(VariableR, Worksheets("Sheet2").Range("C1").Value) > 0 = True Then
+        
+        
+        Sku1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Model1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableMR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Po1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariablePoR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Net1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableNetR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Div1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDivR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        DivName1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDivNR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Dept1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDeptR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        DeptName1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDeptNR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Class1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableClassR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        ClassName1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableClassNR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        SkuDesc1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableSkuDR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        PoCost1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariablePoCR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        List1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableLPR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Uom1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableUOMR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Uomq1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableUOMQR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Carton1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableCQtR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Weight1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableWR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Length1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableLR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Height1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableHR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Width1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableWidR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        UPC1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableUPCR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        VendorNum1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableVNR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Vendor1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableVR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        SourceIND1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableSINDR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        FcOh1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableFcOhR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Dropship1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDropR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Wholesale1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableWholeR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Recycled1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableRFR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Minority1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableMCR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+       
+        Worksheets("Sheet2").Range("C5").Value = Sku1
+        Worksheets("Sheet2").Range("C6").Value = Model1
+        Worksheets("Sheet2").Range("C7").Value = Po1
+        Worksheets("Sheet2").Range("C8").Value = Net1
+        Worksheets("Sheet2").Range("C9").Value = Div1
+        Worksheets("Sheet2").Range("C10").Value = DivName1
+        Worksheets("Sheet2").Range("C11").Value = Dept1
+        Worksheets("Sheet2").Range("C12").Value = DeptName1
+        Worksheets("Sheet2").Range("C13").Value = Class1
+        Worksheets("Sheet2").Range("C14").Value = ClassName1
+        Worksheets("Sheet2").Range("C15").Value = SkuDesc1
+        Worksheets("Sheet2").Range("C16").Value = PoCost1
+        Worksheets("Sheet2").Range("C17").Value = List1
+        Worksheets("Sheet2").Range("C18").Value = Uom1
+        Worksheets("Sheet2").Range("C19").Value = Uomq1
+        Worksheets("Sheet2").Range("C20").Value = Carton1
+        Worksheets("Sheet2").Range("C21").Value = Weight1
+        Worksheets("Sheet2").Range("C22").Value = Length1
+        Worksheets("Sheet2").Range("C23").Value = Height1
+        Worksheets("Sheet2").Range("C24").Value = Width1
+        Worksheets("Sheet2").Range("C25").Value = UPC1
+        Worksheets("Sheet2").Range("C26").Value = VendorNum1
+        Worksheets("Sheet2").Range("C27").Value = Vendor1
+        Worksheets("Sheet2").Range("C28").Value = SourceIND1
+        Worksheets("Sheet2").Range("C29").Value = FcOh1
+        Worksheets("Sheet2").Range("C30").Value = Dropship1
+        Worksheets("Sheet2").Range("C31").Value = Wholesale1
+        Worksheets("Sheet2").Range("C32").Value = Recycled1
+        Worksheets("Sheet2").Range("C33").Value = Minority1
+        Worksheets("Sheet2").Range("C2").Value = Model1
+        Worksheets("Sheet2").Range("C34").Select
+        Selection.ClearContents
+
+    Else:
+        
+        Worksheets("Sheet2").Range("C5:C34").Select
+        Selection.ClearContents
+        Range("I5").Select
+        MsgBox ("This number is not found in the file. Please check to see if it it is correct")
+        
+        
+        End If
+        
+    ElseIf IsEmpty(Worksheets("Sheet2").Range("C1").Value) = True And IsEmpty(Worksheets("Sheet2").Range("C2").Value) = False Then
+    
+    If Application.WorksheetFunction.CountIf(ModelR, removeSpecial(Worksheets("Sheet2").Range("C2"))) > 0 = True Then
+    
+        Worksheets("Sheet2").Range("C2").Value = removeSpecial(Worksheets("Sheet2").Range("C2"))
+        
+        Sku2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Model2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableMR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Po2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariablePoR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Net2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableNetR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Div2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDivR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        DivName2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDivNR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Dept2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDeptR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        DeptName2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDeptNR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Class2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableClassR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        ClassName2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableClassNR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        SkuDesc2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableSkuDR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        PoCost2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariablePoCR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        List2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableLPR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Uom2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableUOMR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Uomq2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableUOMQR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Carton2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableCQtR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Weight2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableWR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Length2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableLR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Height2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableHR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Width2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableWidR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        UPC2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableUPCR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        VendorNum2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableVNR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Vendor2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableVR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        SourceIND2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableSINDR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        FcOh2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableFcOhR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Dropship2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDropR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Wholesale2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableWholeR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Recycled2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableRFR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Minority2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableMCR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        
+        
+        Worksheets("Sheet2").Range("C5").Value = Sku2
+        Worksheets("Sheet2").Range("C6").Value = Model2
+        Worksheets("Sheet2").Range("C7").Value = Po2
+        Worksheets("Sheet2").Range("C8").Value = Net2
+        Worksheets("Sheet2").Range("C9").Value = Div2
+        Worksheets("Sheet2").Range("C10").Value = DivName2
+        Worksheets("Sheet2").Range("C11").Value = Dept2
+        Worksheets("Sheet2").Range("C12").Value = DeptName2
+        Worksheets("Sheet2").Range("C13").Value = Class2
+        Worksheets("Sheet2").Range("C14").Value = ClassName2
+        Worksheets("Sheet2").Range("C15").Value = SkuDesc2
+        Worksheets("Sheet2").Range("C16").Value = PoCost2
+        Worksheets("Sheet2").Range("C17").Value = List2
+        Worksheets("Sheet2").Range("C18").Value = Uom2
+        Worksheets("Sheet2").Range("C19").Value = Uomq2
+        Worksheets("Sheet2").Range("C20").Value = Carton2
+        Worksheets("Sheet2").Range("C21").Value = Weight2
+        Worksheets("Sheet2").Range("C22").Value = Length2
+        Worksheets("Sheet2").Range("C23").Value = Height2
+        Worksheets("Sheet2").Range("C24").Value = Width2
+        Worksheets("Sheet2").Range("C25").Value = UPC2
+        Worksheets("Sheet2").Range("C26").Value = VendorNum2
+        Worksheets("Sheet2").Range("C27").Value = Vendor2
+        Worksheets("Sheet2").Range("C28").Value = SourceIND2
+        Worksheets("Sheet2").Range("C29").Value = FcOh2
+        Worksheets("Sheet2").Range("C30").Value = Dropship2
+        Worksheets("Sheet2").Range("C31").Value = Wholesale2
+        Worksheets("Sheet2").Range("C32").Value = Recycled2
+        Worksheets("Sheet2").Range("C33").Value = Minority2
+        Worksheets("Sheet2").Range("C1").Value = Sku2
+        Worksheets("Sheet2").Range("C2").Value = Model2
+        Worksheets("Sheet2").Range("C34").Select
+        Selection.ClearContents
+        
+    Else:
+    
+        Worksheets("Sheet2").Range("C5:C34").Select
+        Selection.ClearContents
+        Worksheets("Sheet2").Range("I5").Select
+        MsgBox ("This number is not found in the file. Please make sure you have entered the numbers correctly")
+    
+    End If
+    
+    Else:
+    
+    If Application.WorksheetFunction.CountIf(VariableR, Range("C1").Value) > 0 = True Then
+    
+        Sku1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Model1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableMR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Po1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariablePoR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Net1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableNetR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Div1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDivR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        DivName1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDivNR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Dept1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDeptR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        DeptName1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDeptNR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Class1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableClassR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        ClassName1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableClassNR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        SkuDesc1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableSkuDR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        PoCost1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariablePoCR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        List1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableLPR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Uom1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableUOMR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Uomq1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableUOMQR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Carton1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableCQtR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Weight1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableWR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Length1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableLR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Height1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableHR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Width1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableWidR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        UPC1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableUPCR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        VendorNum1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableVNR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Vendor1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableVR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        SourceIND1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableSINDR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        FcOh1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableFcOhR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Dropship1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDropR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Wholesale1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableWholeR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Recycled1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableRFR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+        Minority1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableMCR, Application.Match((Worksheets("Sheet2").Range("C1")), VariableR, 0)), 0)
+      
+        Worksheets("Sheet2").Range("C5").Value = Sku1
+        Worksheets("Sheet2").Range("C6").Value = Model1
+        Worksheets("Sheet2").Range("C7").Value = Po1
+        Worksheets("Sheet2").Range("C8").Value = Net1
+        Worksheets("Sheet2").Range("C9").Value = Div1
+        Worksheets("Sheet2").Range("C10").Value = DivName1
+        Worksheets("Sheet2").Range("C11").Value = Dept1
+        Worksheets("Sheet2").Range("C12").Value = DeptName1
+        Worksheets("Sheet2").Range("C13").Value = Class1
+        Worksheets("Sheet2").Range("C14").Value = ClassName1
+        Worksheets("Sheet2").Range("C15").Value = SkuDesc1
+        Worksheets("Sheet2").Range("C16").Value = PoCost1
+        Worksheets("Sheet2").Range("C17").Value = List1
+        Worksheets("Sheet2").Range("C18").Value = Uom1
+        Worksheets("Sheet2").Range("C19").Value = Uomq1
+        Worksheets("Sheet2").Range("C20").Value = Carton1
+        Worksheets("Sheet2").Range("C21").Value = Weight1
+        Worksheets("Sheet2").Range("C22").Value = Length1
+        Worksheets("Sheet2").Range("C23").Value = Height1
+        Worksheets("Sheet2").Range("C24").Value = Width1
+        Worksheets("Sheet2").Range("C25").Value = UPC1
+        Worksheets("Sheet2").Range("C26").Value = VendorNum1
+        Worksheets("Sheet2").Range("C27").Value = Vendor1
+        Worksheets("Sheet2").Range("C28").Value = SourceIND1
+        Worksheets("Sheet2").Range("C29").Value = FcOh1
+        Worksheets("Sheet2").Range("C30").Value = Dropship1
+        Worksheets("Sheet2").Range("C31").Value = Wholesale1
+        Worksheets("Sheet2").Range("C32").Value = Recycled1
+        Worksheets("Sheet2").Range("C33").Value = Minority1
+        Worksheets("Sheet2").Range("C2").Value = Model1
+        Worksheets("Sheet2").Range("C34").Select
+        Selection.ClearContents
+        
+        If Worksheets("Sheet2").Range("C2").Value <> Worksheets("Sheet2").Range("C6").Value = True And Worksheets("Sheet2").Range("C1").Value <> Worksheets("Sheet2").Range("C5").Value = False Then
+        MsgBox ("The Model Number does not equal what we have on file")
+        
+        End If
+        
+     ElseIf Application.WorksheetFunction.CountIf(ModelR, removeSpecial(Worksheets("Sheet2").Range("C2"))) > 0 = True Then
+     
+        Worksheets("Sheet2").Range("C2").Value = removeSpecial(Worksheets("Sheet2").Range("C2"))
+        
+        Sku2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Model2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableMR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Po2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariablePoR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Net2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableNetR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Div2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDivR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        DivName2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDivNR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Dept2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDeptR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        DeptName2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDeptNR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Class2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableClassR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        ClassName2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableClassNR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        SkuDesc2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableSkuDR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        PoCost2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariablePoCR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        List2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableLPR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Uom2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableUOMR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Uomq2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableUOMQR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Carton2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableCQtR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Weight2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableWR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Length2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableLR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Height2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableHR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Width2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableWidR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        UPC2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableUPCR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        VendorNum2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableVNR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Vendor2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableVR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        SourceIND2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableSINDR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        FcOh2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableFcOhR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Dropship2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableDropR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Wholesale2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableWholeR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Recycled2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableRFR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        Minority2 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableMCR, Application.Match(Worksheets("Sheet2").Range("C2").Value, VariableMR, 0)), 0)
+        
+        Worksheets("Sheet2").Range("C5").Value = Sku2
+        Worksheets("Sheet2").Range("C6").Value = Model2
+        Worksheets("Sheet2").Range("C7").Value = Po2
+        Worksheets("Sheet2").Range("C8").Value = Net2
+        Worksheets("Sheet2").Range("C9").Value = Div2
+        Worksheets("Sheet2").Range("C10").Value = DivName2
+        Worksheets("Sheet2").Range("C11").Value = Dept2
+        Worksheets("Sheet2").Range("C12").Value = DeptName2
+        Worksheets("Sheet2").Range("C13").Value = Class2
+        Worksheets("Sheet2").Range("C14").Value = ClassName2
+        Worksheets("Sheet2").Range("C15").Value = SkuDesc2
+        Worksheets("Sheet2").Range("C16").Value = PoCost2
+        Worksheets("Sheet2").Range("C17").Value = List2
+        Worksheets("Sheet2").Range("C18").Value = Uom2
+        Worksheets("Sheet2").Range("C19").Value = Uomq2
+        Worksheets("Sheet2").Range("C20").Value = Carton2
+        Worksheets("Sheet2").Range("C21").Value = Weight2
+        Worksheets("Sheet2").Range("C22").Value = Length2
+        Worksheets("Sheet2").Range("C23").Value = Height2
+        Worksheets("Sheet2").Range("C24").Value = Width2
+        Worksheets("Sheet2").Range("C25").Value = UPC2
+        Worksheets("Sheet2").Range("C26").Value = VendorNum2
+        Worksheets("Sheet2").Range("C27").Value = Vendor2
+        Worksheets("Sheet2").Range("C28").Value = SourceIND2
+        Worksheets("Sheet2").Range("C29").Value = FcOh2
+        Worksheets("Sheet2").Range("C30").Value = Dropship2
+        Worksheets("Sheet2").Range("C31").Value = Wholesale2
+        Worksheets("Sheet2").Range("C32").Value = Recycled2
+        Worksheets("Sheet2").Range("C33").Value = Minority2
+        Worksheets("Sheet2").Range("C2").Value = Model2
+        Worksheets("Sheet2").Range("C34").Select
+        Selection.ClearContents
+        
+        If Worksheets("Sheet2").Range("C1").Value <> Worksheets("Sheet2").Range("C5").Value = True And Worksheets("Sheet2").Range("C2").Value <> Worksheets("Sheet2").Range("C6").Value = False Then
+        
+        MsgBox ("The SKU Number does not equal what we have on file")
+        
+        End If
+        
+        Else:
+        
+        Worksheets("Sheet2").Range("C5:C34").Select
+        Selection.ClearContents
+        Worksheets("Sheet2").Range("I5").Select
+        MsgBox ("Both SKU and Model number are wrong")
+        
+        
+    End If
+        
+  End If
+  
+'If IsEmpty(Worksheets("Sheet2").Range("C5").Value) = False Then
+
+'Dim Primary As Range
+'Dim PrimaryR As Range
+'Dim VariablePrim As String
+'Dim VariablePrimR As Range
+'Dim Primary1 As String
+
+'Dim image$, FilePath$, photo$, FileWorkbook$
+
+'Dim SkuB As Range
+'Dim SkuRB As Range
+'Dim VariableB As String
+'Dim VariableRB As Range
+'Dim Sku1B As String
+
+'Dim Sht2 As Range
+
+
+'FilePath = "C:\Users\BowDa001\Documents\Z Drive\David's Big Daddy eContent File\"
+'FileWorkbook = "Big Daddy Master E-Content 04.01.19.xlsx"
+
+
+'Workbooks.Open Filename:=FilePath & FileWorkbook
+
+
+'Set Sht2 = Workbooks("Updated - Big Daddy Master Net Cost File 13-June-19 DBow-Phase3.xlsm").Worksheets("Sheet2").Range("C5")
+'Set Primary = Workbooks("Big Daddy Master E-Content 04.01.19.xlsx").Worksheets("WPC SA Categories Export_201904").Range("A:AK").Find("Primary_Image")
+'Set PrimaryR = Primary.EntireColumn
+'VariablePrim = PrimaryR.Address(External:=True)
+'Set VariablePrimR = Range(VariablePrim)
+
+'Set SkuB = Workbooks("Big Daddy Master E-Content 04.01.19.xlsx").Worksheets("WPC SA Categories Export_201904").Range("A:A").Find("SKU")
+'Set SkuRB = SkuB.EntireColumn
+'VariableB = SkuRB.Address(External:=True)
+'Set VariableRB = Range(VariableB)
+
+
+'With ThisWorkbook.ActiveSheet
+
+'Sku1B = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariableRB, Application.Match(Sht2, VariableRB, 0)), 0)
+'Primary1 = Application.WorksheetFunction.IfError(Application.WorksheetFunction.Index(VariablePrimR, Application.Match((Sht2), VariableRB, 0)), 0)
+
+'End With
+
+'
+'ActiveWorkbook.Close savechanges:=False
+'Application.ScreenUpdating = True
+
+
+
+'Worksheets("Sheet2").Range("C34").Value = Primary1
+
+
+'If IsEmpty(Worksheets("Sheet2").Range("C34").Value) = False Then
+
+'photo = "https://www.staples-3p.com/s7/is/image/Staples/" + Primary1 + "?wid=1000&hei=1000"
+
+'Sheet2.Shapes.AddPicture photo, msoTrue, msoTrue, 500, 120, 130, 75
+
+'Else:
+
+'End If
+
+'Else:
+
+'End If
+
+Exit Sub
+
+Boi:
+
+    MsgBox "There is no Match: " & Err.Description
+    
+Exit Sub
+
+End Sub
