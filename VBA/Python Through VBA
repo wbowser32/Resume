@@ -1,0 +1,17 @@
+Option Explicit
+
+Sub Python_Stuff()
+
+Dim objShell As Object
+Dim PythonExe$, PythonScript$
+
+Set objShell = VBA.CreateObject("Wscript.Shell")
+
+PythonExe = """C:\Users\BowDa001\miniconda3\envs\WebScraping\python.exe"""
+PythonScript = "C:/Users/BowDa001/Desktop/Python/WebScraping/ExcelStuff.py"
+
+objShell.Run PythonExe & PythonScript
+
+
+
+End Sub
