@@ -6,7 +6,7 @@ host, username, password = 'HOST', 'UID', 'PWD'
 # Make a connection
 udaExec = teradata.UdaExec(appName="test", version="1.0", logConsole=False)
 
-with udaExec.connect(method="odbc", system="td-gdw-p-", username='BowDa001', password='Geralt72!', authentication="LDAP", driver="Teradata Database ODBC Driver 16.10") as connect:
+with udaExec.connect(method="odbc", system="", username='', password='', authentication="LDAP", driver="Teradata Database ODBC Driver 16.10") as connect:
 
     #query = "SELECT TOP 3 order_no As Staples_order_no, bill_to_id AS Sell FROM PRD_USD_OPV.SOMS_YFS_ORDER_HEADER_V as oh INNER JOIN PRD_USD_OPV.SOMS_YFS_ORDER_LINE_V as ol ON oh.order_header_key = ol.order_header_key;"
     #query = open(r'C:\Users\BowDa001\Desktop\Ruchi.sql','r')
@@ -57,7 +57,7 @@ WHERE oh.extn_order_channel = 'HITOUCH' AND oh.document_type = '0001' AND ys.pro
     df['Shipped_Item_Id'] = df['Shipped_Item_Id'].map(lambda x: re.sub(r'\W+', '', x))
 # do something with df,e.g.
     #print(df)
-    df.to_csv(r'C:\Users\BowDa001\Desktop\Toad_File.csv')
+    df.to_csv(r'C:\Users\')
 
 
 #-- ((unit_price * Ordered_Qty) - (Unit_Cost * Ordered_Qty)) / (unit_price * Ordered_Qty)ASGross_Margin, \
