@@ -1,0 +1,61 @@
+Option Explicit
+Sub AMAZON()
+
+Dim IE As InternetExplorer
+Dim Element As MSHTML.IHTMLElementCollection
+'MSHTML.IHTMLElementCollection
+Dim Elemental As MSHTML.IHTMLElement
+'Dim Elemental As Object
+Dim Primary1 As String
+Dim text$
+Dim i As Integer
+Dim lastrow As Long
+
+
+With ActiveSheet
+        lastrow = .Cells(.Rows.Count, "D").End(xlUp).Row
+End With
+
+i = 10
+
+Do Until IsEmpty(Cells(i, 4))
+
+Primary1 = Cells(i, 4).Value
+
+Set IE = CreateObject("InternetExplorer.Application")
+
+text = "https://sellercentral.amazon.com/orders-v3/order/" + Primary1
+
+
+IE.Visible = False
+IE.navigate (text)
+
+Do While IE.readyState <> READYSTATE_COMPLETE
+    DoEvents
+Loop
+
+Set Element = IE.document.getElementById("MYO-app").getElementsByTagName("textarea")
+
+'textcontent
+'getElementById("MYO-app")
+'getElementsByClassName("a-input-text-wrapper")
+'.getElementsByTagName("textarea")
+'innerText
+
+For Each Elemental In Element
+    Debug.Print Elemental
+    'Cells(i, 33).Value = Elemental.innerText
+Next Elemental
+
+IE.Quit
+Set IE = Nothing
+
+i = i + 1
+Loop
+
+'ActiveWorkbook.Save
+
+End Sub
+
+
+
