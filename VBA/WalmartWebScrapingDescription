@@ -1,0 +1,72 @@
+Option Explicit
+Sub WalmartSearchDescription()
+
+Dim IE As InternetExplorer
+'Dim Element As String
+Dim html As HTMLDocument
+Dim ElementCol As Object, Link As Object
+Dim ecol As Long
+'Dim Element As MSHTML.IHTMLElementCollection
+'MSHTML.IHTMLElementCollection
+'Dim Elemental As MSHTML.IHTMLElement
+'Dim Elemental As Object
+Dim Primary1 As String
+Dim text$
+Dim i As Integer
+Dim Range As Range
+Dim lastrow As Long
+Dim Variable As String
+
+On Error Resume Next
+
+
+With ActiveSheet
+        lastrow = .Cells(.Rows.Count, "D").End(xlUp).Row
+End With
+
+i = 1730
+
+Do Until IsEmpty(Cells(i, 4))
+
+Primary1 = Cells(i, 4).Value
+
+Set IE = CreateObject("InternetExplorer.Application")
+
+text = "https://www.walmart.com/search/?query=" + Primary1
+
+
+IE.Visible = False
+IE.navigate (text)
+
+Do While IE.readyState <> READYSTATE_COMPLETE
+    DoEvents
+Loop
+
+Set html = IE.Document
+
+'If IsObject(html.getElementById("searchProductResult")) Then
+
+Set ElementCol = html.getElementById("searchProductResult").getElementsByTagName("img")
+'If IsObject(ElementCol) Then
+'textcontent
+'getElementById("MYO-app")
+'getElementsByClassName("a-input-text-wrapper")
+'.getElementsByTagName("textarea")
+'innerText
+
+For Each Link In ElementCol
+Cells(i, 18).Value = Link.alt
+'Variable = Link.alt
+'Debug.Print Variable
+Next
+
+'ActiveWorkbook.Save
+
+IE.Quit
+Set IE = Nothing
+
+i = i + 1
+Loop
+
+End Sub
+
