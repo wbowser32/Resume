@@ -16,7 +16,8 @@ Dim i As Integer
 Dim Range As Range
 Dim lastrow As Long
 Dim Variable As String
-
+Dim Variable1 As Variant
+Dim coll As New Collection
 On Error Resume Next
 
 
@@ -24,11 +25,10 @@ With ActiveSheet
         lastrow = .Cells(.Rows.Count, "D").End(xlUp).Row
 End With
 
-i = 1730
+i = 3
+Do Until IsEmpty(Cells(i, 6))
 
-Do Until IsEmpty(Cells(i, 4))
-
-Primary1 = Cells(i, 4).Value
+Primary1 = Cells(i, 6).Value
 
 Set IE = CreateObject("InternetExplorer.Application")
 
@@ -53,20 +53,29 @@ Set ElementCol = html.getElementById("searchProductResult").getElementsByTagName
 'getElementsByClassName("a-input-text-wrapper")
 '.getElementsByTagName("textarea")
 'innerText
+'Cells(i, 24).Value = ElementCol
+'Variable = ElementCol
+'Debug.Print Variable
 
 For Each Link In ElementCol
-Cells(i, 18).Value = Link.alt
-'Variable = Link.alt
-'Debug.Print Variable
+'For Link In ElementCol
+'Cells(i, 24).Value = Link.alt
+Variable = Link.alt
+coll.Add Variable
+Cells(i, 24).Value = coll(1)
+'Variable1 = Variable
+'Debug.Print coll(1)
 Next
 
-'ActiveWorkbook.Save
+ActiveWorkbook.Save
 
 IE.Quit
 Set IE = Nothing
+Variable = ""
+Variable1 = ""
+Set coll = Nothing
 
 i = i + 1
 Loop
 
 End Sub
-
