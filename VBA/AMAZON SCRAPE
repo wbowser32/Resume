@@ -1,0 +1,127 @@
+Option Explicit
+Sub Amazon()
+
+Dim IE As InternetExplorer
+'Dim Element As String
+Dim html As HTMLDocument
+Dim ElementCol As Object, Link As Object
+Dim ElementCol2 As Object, Link2 As Object
+Dim ElementCol3 As Object, Link3 As Object
+Dim ecol As Long
+'Dim Element As MSHTML.IHTMLElementCollection
+'MSHTML.IHTMLElementCollection
+'Dim Elemental As MSHTML.IHTMLElement
+'Dim Elemental As Object
+Dim Primary1 As String
+Dim Primary2 As String
+Dim text$
+Dim i As Integer
+Dim Range As Range
+Dim lastrow As Long
+Dim Variable As String
+Dim Variable1 As String
+Dim Variable2 As String
+Dim coll As New Collection
+Dim coll2 As New Collection
+Dim coll3 As New Collection
+On Error Resume Next
+
+i = 2
+Do Until IsEmpty(Cells(i, 3))
+'Do Until i = 2
+Primary1 = Cells(i, 3).Value
+Set IE = CreateObject("InternetExplorer.Application")
+
+text = "https://www.amazon.com/s?k=" + Primary1
+
+IE.Visible = False
+IE.navigate (text)
+
+Do While IE.readyState <> READYSTATE_COMPLETE
+    DoEvents
+Loop
+
+Set html = IE.Document
+
+'If IsObject(html.getElementById("searchProductResult")) Then
+
+Set ElementCol = html.getElementById("search").getElementsByTagName("img")
+Set ElementCol2 = html.getElementById("search").getElementsByClassName("a-link-normal a-text-normal")
+
+'If IsObject(ElementCol) Then
+'textcontent
+'getElementById("MYO-app")
+'getElementsByClassName("a-input-text-wrapper")
+'.getElementsByTagName("textarea")
+'innerText
+'Cells(i, 24).Value = ElementCol
+'Variable = ElementCol
+'Debug.Print Variable
+
+For Each Link In ElementCol
+'For Link In ElementCol
+'Cells(i, 24).Value = Link.alt
+Variable = Link.alt
+coll.Add Variable
+Cells(i, 4).Value = coll(1)
+'Variable1 = Variable
+'Debug.Print coll(1)
+Next
+
+For Each Link2 In ElementCol2
+'For Link In ElementCol
+'Cells(i, 24).Value = Link.alt
+Variable1 = Link2.href
+coll2.Add Variable1
+Cells(i, 5).Value = coll2(1)
+'Variable1 = Variable
+'Debug.Print coll2(1)
+Next
+
+Variable = ""
+Variable1 = ""
+Set coll = Nothing
+Set coll2 = Nothing
+Set ElementCol = Nothing
+Set ElementCol2 = Nothing
+
+Primary2 = Cells(i, 5).Value
+IE.navigate (Primary2)
+
+Do While IE.readyState <> READYSTATE_COMPLETE
+    DoEvents
+Loop
+
+'Set ElementCol3 = html.getElementById("bylineInfo")
+Set ElementCol3 = html.getElementById("ppd").getElementsByClassName("a-section a-spacing-none")
+
+'Link3 = ElementCol3(0).innerText
+'Cells(i, 7).Value = Link3
+'<a class="a-link-normal" id="bylineInfo" href="/stores/Avery/page/5BC9E2A8-82F1-430F-8F63-FA716ED60B79?ref_=ast_bln">Avery</a>
+For Each Link3 In ElementCol3
+'For Link In ElementCol
+'Cells(i, 24).Value = Link.alt
+Variable2 = Link3.outerText
+If Variable2 Like "by*" Then
+'coll3.Add Variable2
+Cells(i, 7).Value = Variable2
+'Variable1 = Variable
+'Debug.Print coll3
+End If
+Next
+
+
+ActiveWorkbook.Save
+
+IE.Quit
+Set IE = Nothing
+Variable2 = ""
+Set coll3 = Nothing
+
+Cells(i, 6) = "=HYPERLINK(RC[-1])"
+
+i = i + 1
+Loop
+
+End Sub
+
