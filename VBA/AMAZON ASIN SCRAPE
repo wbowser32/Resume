@@ -24,6 +24,15 @@ Dim Variable2 As String
 Dim coll As New Collection
 Dim coll2 As New Collection
 Dim coll3 As New Collection
+Dim BY As String
+Dim Table As Object, h As Object
+Dim tHead As Object
+Dim dHead As Object
+Dim tCells As Object
+Dim coll4 As New Collection
+Dim coll5 As New Collection
+Dim x As Integer
+Dim y As Integer
 On Error Resume Next
 
 i = 2
@@ -92,8 +101,12 @@ Do While IE.readyState <> READYSTATE_COMPLETE
     DoEvents
 Loop
 
-'Set ElementCol3 = html.getElementById("bylineInfo")
 Set ElementCol3 = html.getElementById("ppd").getElementsByClassName("a-section a-spacing-none")
+Set Table = html.getElementsByClassName("a-keyvalue prodDetTable")
+Set tHead = Table(0).getElementsByTagName("th")
+Set dHead = Table(0).getElementsByTagName("td")
+
+'Set ElementCol3 = html.getElementById("bylineInfo")
 
 'Link3 = ElementCol3(0).innerText
 'Cells(i, 7).Value = Link3
@@ -102,25 +115,69 @@ For Each Link3 In ElementCol3
 'For Link In ElementCol
 'Cells(i, 24).Value = Link.alt
 Variable2 = Link3.outerText
-If Variable2 Like "by*" Or Variable2 Like "By*" Then
+If Variable2 Like "by*" Or Variable2 Like "By*" Or Variable2 Like "Brand*" Or Variable2 Like "brand*" Then
 'coll3.Add Variable2
-Cells(i, 8).Value = Variable2
+BY = Variable2
 'Variable1 = Variable
 'Debug.Print coll3
 End If
 Next
 
 
-ActiveWorkbook.Save
+For Each h In tHead
+
+Variable = h.innerText
+coll4.Add Variable
+
+If Variable = "Manufacturer " Then
+x = coll4.Count
+End If
+
+If Variable = "Manufacturer Part Number " Then
+y = coll4.Count
+End If
+
+Next
+
+If x <> 0 Then
+
+For Each h In dHead
+Variable = h.innerText
+coll5.Add Variable
+Cells(i, 13).Value = coll5(x)
+Next
+
+End If
+
+If y <> 0 Then
+
+For Each h In dHead
+Variable = h.innerText
+coll5.Add Variable
+Cells(i, 14).Value = coll5(y)
+Next
+
+End If
+
+Cells(i, 8).Value = Left(BY, Len(BY) - 1)
 
 IE.Quit
 Set IE = Nothing
 Variable2 = ""
 Set coll3 = Nothing
+Variable1 = ""
+Set coll2 = Nothing
+Set coll4 = Nothing
+Set coll5 = Nothing
+BY = ""
+x = "0"
+y = "0"
+
 
 Cells(i, 7) = "=HYPERLINK(RC[-1])"
 
 i = i + 1
+ActiveWorkbook.Save
 Loop
 
 End Sub
