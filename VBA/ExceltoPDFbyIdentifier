@@ -1,0 +1,68 @@
+Option Explicit
+
+Sub SaveRangeAsPDF()
+
+'Create and assign variables
+Dim saveLocation As String
+Dim rng As Range
+Dim rng2 As Range
+Dim StoreNum As String
+Dim StoreN As String
+Dim i As Integer
+Dim y As Integer
+Dim z As Integer
+
+'The Idea is if the Store number matches the one we are looking through, we paste that to the New_File. We then save the new file as PDF. Clearout the file, then go to the next i in loop
+
+
+'set the range to only where Cells(,2) = Cells(i,1)
+'StoreNum = i
+'For Each set as list Copy over to New_File
+
+'For Each htmlTableCell In htmlTableCells
+'If  Then
+'x = coll4.Count
+i = 2
+y = 2
+z = 2
+Set rng = Sheets("Sheet1").Range("B:B")
+Do Until IsEmpty(Sheets("Totals").Cells(i, 1))
+
+StoreNum = Sheets("Totals").Cells(i, 1)
+
+
+Do Until IsEmpty(Sheets("Sheet1").Cells(y, 2))
+
+StoreN = Sheets("Sheet1").Cells(y, 2)
+
+If StoreN = StoreNum Then
+Sheets("New_File").Cells(z, 1) = Sheets("Sheet1").Cells(y, 2)
+Sheets("New_File").Cells(z, 2) = Sheets("Sheet1").Cells(y, 4)
+Sheets("New_File").Cells(z, 3) = Sheets("Sheet1").Cells(y, 5)
+Sheets("New_File").Cells(z, 4) = Sheets("Sheet1").Cells(y, 6)
+Sheets("New_File").Cells(z, 5) = Sheets("Sheet1").Cells(y, 7)
+y = y + 1
+z = z + 1
+
+Else
+y = y + 1
+End If
+Loop
+
+Set rng2 = Sheets("New_File").Range("A:E")
+'Save a range as PDF
+saveLocation = "C:\Users\BowDa001\OneDrive - Corporate\Desktop\CORY_PDF\Store_Number " + StoreNum
+rng2.ExportAsFixedFormat Type:=xlTypePDF, _
+Filename:=saveLocation
+
+Sheets("New_File").Range("A2:E2").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.ClearContents
+
+i = i + 1
+y = 2
+z = 2
+'Then Delete everthing in New File and loop
+Loop
+
+End Sub
