@@ -39,8 +39,8 @@ If StoreN = StoreNum Then
 Sheets("New_File").Cells(z, 1) = Sheets("Sheet1").Cells(y, 2)
 Sheets("New_File").Cells(z, 2) = Sheets("Sheet1").Cells(y, 4)
 Sheets("New_File").Cells(z, 3) = Sheets("Sheet1").Cells(y, 5)
-Sheets("New_File").Cells(z, 4) = Sheets("Sheet1").Cells(y, 6)
-Sheets("New_File").Cells(z, 5) = Sheets("Sheet1").Cells(y, 7)
+'Sheets("New_File").Cells(z, 4) = Sheets("Sheet1").Cells(y, 6)
+Sheets("New_File").Cells(z, 4) = Sheets("Sheet1").Cells(y, 7)
 y = y + 1
 z = z + 1
 
@@ -49,15 +49,14 @@ y = y + 1
 End If
 Loop
 
-Set rng2 = Sheets("New_File").Range("A:E")
+Set rng2 = Sheets("New_File").Range("A:D")
 'Save a range as PDF
 saveLocation = "C:\Users\BowDa001\OneDrive - Corporate\Desktop\CORY_PDF\Store_Number " + StoreNum
 rng2.ExportAsFixedFormat Type:=xlTypePDF, _
 Filename:=saveLocation
 
-Sheets("New_File").Range("A2:E2").Select
-Range(Selection, Selection.End(xlDown)).Select
-Selection.ClearContents
+Sheets("New_File").Range("A2:D2000").Clear
+
 
 i = i + 1
 y = 2
@@ -66,3 +65,4 @@ z = 2
 Loop
 
 End Sub
+
