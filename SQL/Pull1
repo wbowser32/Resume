@@ -1,0 +1,160 @@
+--/*==========================================*/
+----PILLAR 2 Profitability report for Butch
+--/*==========================================*/
+
+--Clean Staples and shipped item id Columns and update the table
+update [SandBox].[dbo].[P2 Order Data] set [OrderedSKU]=replace(rtrim(REPLACE([OrderedSKU],' ','')),'-',''),[ShipSku]=replace(rtrim(REPLACE([ShipSku],' ','')),'-','') --,[ShipDate]=cast(cast(cast([Shipdate] as int) as varchar(8)) as datetime)
+--/*==========================================*/
+
+-- Find the lowest price for SPR items without duplicating the rows
+IF OBJECT_ID('tempdb.dbo.#New_SPRnet_Tbl')		IS NOT NULL DROP TABLE #New_SPRnet_Tbl
+;
+select 
+	[Stock Number],
+	[Final SPR NET],
+	[SPR selling unit of measure (SUOM)],
+	r = row_number() over(partition by [Stock Number] order by [Final SPR NET] asc)
+
+into 
+	#New_SPRnet_Tbl
+
+from  [SandBox].[dbo].[P3 SPR NetCost]	
+
+UPDATE STATISTICS #New_SPRnet_Tbl
+;
+--select * from #New_SPRnet_Tbl;
+----/*==========================================*/
+
+---- Find the Most recent NAV id, Our item number for unique staples xref without duplicating the rows
+--IF OBJECT_ID('tempdb.dbo.#StaplesXref_Tbl')		IS NOT NULL DROP TABLE #StaplesXref_Tbl
+--;
+--select 
+--	StaplesXrefSKU,
+--	[Our item No_],
+--	[No_],
+--	r = row_number() over(partition by StaplesXrefSKU order by [Our item No_],[No_] asc )
+
+--into 
+--	#StaplesXref_Tbl
+
+--from  NAVRep.NAVRep.dbo.[Hi Touch$Item]	
+--where StaplesXrefSKU<>''
+--UPDATE STATISTICS #StaplesXref_Tbl
+--;
+----select * from #StaplesXref_Tbl;
+----/*==========================================*/
+select 
+       PO.[ReportTitle]
+      ,PO.[CreateDate]
+      ,PO.[ShipDate]
+      ,PO.[CreateTime]
+      ,PO.[CustomerNumber]
+      ,PO.[OrderNumber]
+      ,PO.[PONumber]
+	  --,po.[Vendor_PO#]
+      ,PO.[PORelease]
+      ,PO.[Link]
+	  ,po.Carrier
+	  ,po.Ord_Close_date
+	  ,po.Ord_Close_time
+	  ,po.Ord_Hold_release_date
+	  ,po.Ord_Hold_release_time
+      ,PO.[Shipment]
+      ,PO.[OrderedSKU]
+      ,PO.[ShipSku]
+	  ,[Item_Department]			= isnull(po.[Item_Department],'')
+	  ,[Item_Division]				= isnull(po.[Item_Division],'')
+	  ,[Item_Class]					= isnull(po.[Item_Class],'')
+	  ,State_Staples                =(select [RESTSKU] FROM [SandBox].[DBO].[P2 and P3 Corp_Restricted Items]  WHERE [RESTSKU]= convert(varchar,PO.[OrderedSKU]) and [RESTSTATE] = PO.[State] and [RESTFMTO] ='F' group by [RESTSKU])
+	  ,Zip_Staples                  =(select [RESTSKU] FROM [SandBox].[DBO].[P2 and P3 Corp_Restricted Items]  WHERE [RESTSKU]= convert(varchar,PO.[OrderedSKU])  and [RESTZIPCD] = po.[Zip] and [RESTFMTO] ='F' group by [RESTSKU])
+	  ,State_ESS                    =(select [Staples Xref] from [SandBox].[DBO].[P2 and P3 State-ESS]   where [Staples Xref]  = convert(varchar,PO.[OrderedSKU])  or [Staples Xref] = PO.[ShipSku] group by [Staples Xref])
+	   ,[Quantity Break Items]		= isnull(QB.[Staples SKU],'')
+	  ,[Quill SKU]					= isnull(QS.[Quill SKU],'')
+	  ,[Pendamic items]				= isnull(pd.[staples sku],'')
+	  ,[E-DONOTSELL]                = ISNULL(edn.[Staples_sku],'')
+	  ,[E-STAPLES-NSW]              = ISNULL(esn.[Staples_sku],'')
+      ,PO.[ItemDescription]
+      ,PO.[QTYOrdered]
+      ,PO.[QTYShipped]
+      ,PO.[ExpectedPrice]
+      ,PO.[DemandSkuCost]
+      ,PO.[TaxTotal]
+      ,PO.[DeliveryTotal]
+      ,PO.[HUB]
+      ,PO.[FC]
+	  ,po.[OrderStatus]
+	  ,os.[Status Desc] as [Order Status Desc]
+	  ,po.[OrderlineStatus]
+	  ,ols.[Status Desc] as [Orderline Status Desc]
+      ,PO.[ShipmentStatus]
+	  ,ss.[Status Desc] as [Shipment Status Desc]
+	  ,PO.Shipment_DropshipFlag
+	  ,PO.Line_DropshipFlag
+	  ,PO.CO_Comment_LINE
+	  ,po.CO_Userid
+      ,PO.PickLocation
+    --  ,case when po.[ShipmentStatus] ='BCN'  then (select P1.[ShipmentStatus] from [SandBox].[dbo].[P2 Order Data] p1 where p1.OrderNumber = po.OrderNumber and po.OrderedSKU =p1.OrderedSKU and P1.ShipmentStatus not in ('BCN','SCR')) else '' end as BCN_next 
+     ,'' as bcn_net
+	  ,PO.OrderMethod
+      ,PO.ScheduledDeliveryDate
+      ,PO.ShipToID
+      ,PO.DeliveryMethod
+      ,PO.CustomreName
+      ,PO.ShippingCustomerName
+      ,PO.OrderByName
+      ,PO.[Address1]
+      ,PO.[Address2]
+      ,PO.[Address3]
+      ,PO.[City]
+      ,PO.[State]
+      ,PO.[ZIP]
+      ,PO.[OrderTotal]
+      ,[STP Net Cost]				= isnull(st.[Net Cost],'')
+	--  ,[STP Net Cost GM %]		= CASE WHEN PO.[Unit_Price] = '0' then ''	  else ISNULL(1-(st.[Net Cost]/PO.[Unit_Price]),'')	  end
+	--  ,[STP PO Cost]				= isnull(ST.[PO Cost],'')
+	--  ,[STP PO Cost GM %]			= CASE WHEN PO.[Unit_Price] = '0' then ''         else ISNULL(1-(st.[PO Cost]/PO.[Unit_Price]),'')	  end
+	  ,[STP UOM]					= ISNULL(ST.[UOM],'')
+	  ,[ESS Net Cost]				= ISNULL(ES.[Dead Net Cost],'')
+	--  ,[ESS Net Cost GM %]		= CASE WHEN PO.[Unit_Price] = '0' then ''	  else ISNULL(1-(ES.[Dead Net Cost]/PO.[Unit_Price]),'')  end
+	  ,[ESS UOM]					= ISNULL(ES.[Inv Uom],'')
+	  ,[SPR NET]					= ISNULL(SP.[Final SPR NET],'')
+	--  ,[SPR Net Cost GM %]		= CASE WHEN PO.[Unit_Price] = '0' then ''	  else ISNULL(1-(SP.[Final SPR NET]/PO.[Unit_Price]),'')  end
+	  ,[SPR UOM]					= ISNULL(SP.[SPR selling unit of measure (SUOM)],'')
+	  ,[Ext Mer]					=  CASE WHEN PO.[PickLocation] LIKE '%US%'		THEN isnull(PO.[QTYShipped]*PO.[ExpectedPrice],'')
+											WHEN PO.[PickLocation] LIKE '%SR%'		THEN isnull(PO.[QTYShipped]*PO.[ExpectedPrice],'')
+											WHEN PO.[PickLocation] LIKE '%FC%'		THEN isnull(PO.[QTYShipped]*PO.[ExpectedPrice],'')
+											ELSE '' END
+	  ,[Ext Net]					=  CASE WHEN PO.[PickLocation] LIKE '%US%'		THEN isnull(PO.[QTYShipped]*ES.[Dead Net Cost],'')
+											WHEN PO.[PickLocation] LIKE '%SR%'		THEN isnull(PO.[QTYShipped]*SP.[Final SPR NET],'')
+											WHEN PO.[PickLocation] LIKE '%FC%'		THEN isnull(PO.[QTYShipped]*st.[Net Cost],'')
+											ELSE '' END
+	  ,[By Item]					=  CASE WHEN PO.[PickLocation] LIKE '%US%' 	    AND   PO.[QTYShipped] <>'0' AND PO.[ExpectedPrice] <>'0' 	THEN isnull(1-((isnull(ES.[Dead Net Cost]*PO.[QTYShipped],''))/(isnull(PO.[QTYShipped]*PO.[ExpectedPrice],''))),'')
+											WHEN PO.[PickLocation] LIKE '%SR%'      AND   PO.[QTYShipped] <>'0' AND PO.[ExpectedPrice] <>'0'    THEN ISNULL(1-((ISNULL(SP.[Final SPR NET]*PO.[QTYShipped],''))/(isnull(PO.[QTYShipped]*PO.[ExpectedPrice],''))),'')
+											WHEN PO.[PickLocation] LIKE '%FC%' 	    AND   PO.[QTYShipped] <>'0' AND PO.[ExpectedPrice] <>'0'    THEN isnull(1-((isnull(st.[Net Cost]*PO.[QTYShipped],''))/(isnull(PO.[QTYShipped]*PO.[ExpectedPrice],''))),'')
+											ELSE '' END
+
+from 
+			  [SandBox].[dbo].[P2 Order Data]		PO 
+	LEFT JOIN [SandBox].[dbo].[P3 STP NetCost]		ST ON  ST.[SKU]			= case when left(PO.[ShipSku],1)='0' then right(po.[ShipSku], (len(po.[ShipSku])-1)) else PO.[ShipSku] end
+	LEFT JOIN [SandBox].[dbo].[P3 ESS NetCost]		ES ON  PO.[ShipSku]		= ES.[Item Number]
+	--LEFT JOIN [SandBox].[dbo].[P3 ESS NEW NetCost]	EN ON  PO.[ShipSku]	= EN.[Item Number]
+	LEFT JOIN #New_SPRnet_Tbl						SP ON  PO.[ShipSku]		= SP.[Stock Number]
+													   AND SP.r				= 1
+	LEFT JOIN (select [Staples SKU] from [SandBox].[DBO].[P2 and P3 Quantity break items] group by [Staples SKU]) 
+													QB ON  QB.[Staples SKU] = PO.ShipSku
+	LEFT JOIN [SandBox].[DBO].[P2 and P3 Quill items] 
+													QS ON QS.[Quill SKU]	= PO.ShipSku
+	LEFT JOIN [SandBox].[DBO].[P2 and P3 pendamics items] 
+													pd ON  pd.[staples sku]	= st.[sku]
+    LEFT JOIN [SandBox].[DBO].[P2 and P3 E-DONOTSELL]
+												   EDN ON  PO.[ShipSku]     = EDN.[Staples_sku]
+    LEFT JOIN [SandBox].[DBO].[P2 and P3 E-STAPLES-NSW]
+												   EsN ON  PO.[ShipSku]     = Esn.[Staples_sku]    
+	Left JOin [SandBox].[DBO].[P2 Status]           Os ON os.code			= po.orderstatus
+	Left JOIN [SandBox].[DBO].[P2 Status]          ols ON ols.Code          = po.OrderlineStatus 
+	Left JOIN [SandBox].[DBO].[P2 Status]           Ss ON Ss.Code           = po.ShipmentStatus 
+
+--Where po.SHIPSKU ='006216'
+ORDER BY
+PO.CreateDate,po.OrderNumber,po.CreateTime
+
