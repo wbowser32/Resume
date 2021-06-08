@@ -1,0 +1,359 @@
+----PILLAR 2 SOMS Profitability report for butch
+
+-------------Daily changes---------
+--update E- StaplesNSW AND E-Donotsell
+--Send Dropship Vendor Report to Keesha Everyday
+
+-------------MOnthly changes--------
+---update----Check with Usha on sku Expirydate
+---update DropshipVendors
+---update corporate restricted items 
+---update State-ESS
+--/*==========================================*/
+--Clean Staples and shipped item id Columns and update the table
+update [SandBox].[dbo].[P2 SOMS Order Data] set [staples_Item_No]=replace(rtrim([staples_Item_No]),'-','') ,[Vendor_PO#]=rtrim([Vendor_PO#]),[Shipped_Item_Id]=replace(rtrim([Shipped_Item_Id]),'-','')
+update [SandBox].[dbo].[P3 SKU Expirydate] set  [ITEM_ID]=replace(rtrim([ITEM_ID]),'-','')
+--/*==========================================*/
+-- Find the lowest price for SPR items without duplicating the rows
+IF OBJECT_ID('tempdb.dbo.#New_SPRnet_Tbl')	IS NOT NULL DROP TABLE #New_SPRnet_Tbl
+;
+select 
+	[Stock Number],
+	[Final SPR NET],
+	[SPR selling unit of measure (SUOM)],
+	r = row_number() over(partition by [Stock Number] order by [Final SPR NET] asc)
+
+into 
+	#New_SPRnet_Tbl
+
+from  [SandBox].[dbo].[P3 SPR NetCost]	
+
+UPDATE STATISTICS #New_SPRnet_Tbl
+;
+--select * from #New_SPRnet_Tbl;
+--/*==========================================*/
+
+-- Find the Most recent NAV id, Our item number for unique staples xref without duplicating the rows
+-- IF OBJECT_ID('tempdb.dbo.#StaplesXref_Tbl')		IS NOT NULL DROP TABLE #StaplesXref_Tbl
+--;
+-- select 
+--	StaplesXrefSKU,
+--	[Our item No_],
+--	[No_],
+--	r = row_number() over(partition by StaplesXrefSKU order by [Our item No_],[No_] asc )
+
+-- into 
+-- #StaplesXref_Tbl
+
+-- from  NAVRep.NAVRep.dbo.[Hi Touch$Item]	
+--where StaplesXrefSKU <> ''
+--UPDATE STATISTICS #StaplesXref_Tbl
+--;
+----select * from #StaplesXref_Tbl;
+----/*==========================================*/
+IF OBJECT_ID('tempdb.dbo.#P3_Core_Tbl')		IS NOT NULL DROP TABLE #P3_Core_Tbl
+;
+SELECT 
+	   PO.[Staples_order_no]
+      ,PO.[External_Document_No]
+      ,PO.[Sell_to_Customer_no]
+	  ,[Vendor_PO#]              = ISNULL(po.[Vendor_PO#],'')
+      ,PO.[customer_name]
+      ,PO.[Ship_To_State]
+      ,PO.[ZipCode]
+      ,PO.[method_of_payment]
+      ,PO.[status]
+      ,PO.[Status_Description]
+      ,PO.[Original_Ordered_Qty]
+      ,PO.[status_quantity]
+      ,[Ship_Node]					= ISNULL(PO.[Ship_Node],'')
+      ,PO.[Unit_Price]
+      ,PO.[Merchandize$]
+      ,PO.[Marketplace_TAX]
+      ,PO.[staples_TAX]
+      ,[Shipment_Type]				=ISNULL(PO.[Shipment_Type],'')
+      ,[WhoelsalerName_Vendor#_FC#]	=ISNULL(PO.[WhoelsalerName_Vendor#_FC#],'')
+	  ,[NAV_id]						=ISNULL(PO.NAV_id,'')
+      ,[staples_Item_No]			=isnull(po.[staples_Item_No],'')
+	  --,[Assortment External]		=isnull(NI.[Our Item No_],'')
+      ,[Shipped_Item_Id]			=isnull(PO.[Shipped_Item_Id],'')
+      ,[Vendor_Part_No]				=ISNULL(PO.[Vendor_Part_No],'')
+      ,[EXTERNAL_ITEM_NO]			=CONVERT(VARCHAR,PO.[EXTERNAL_ITEM_NO])
+	  ,[Item_Department]			=isnull(po.[Item_Department],'')
+	  ,[Item_Division]				=isnull(po.[Item_Division],'')
+	  ,[Item_Class]					=case when PO.[WhoelsalerName_Vendor#_FC#] LIKE '%UNITED%' then (select top (1) ess.[Class Desc] from [SandBox].[dbo].[P2 and p3 ESS class]		ESs where  PO.[Shipped_Item_Id] = ESs.[WHLSR_ITEM_#])
+	                                      when PO.[WhoelsalerName_Vendor#_FC#] LIKE '%SP R%' then (select top (1) sPR.[Class Desc] from [SandBox].[dbo].[P2 and p3 SPR class]		SPR where  PO.[Shipped_Item_Id] = SPR.[strpno])
+										  else isnull(po.[Item_Class],'') end
+	  ,State_Staples                =(select [RESTSTATE] FROM [SandBox].[DBO].[P2 and P3 Corp_Restricted Items]  WHERE [RESTSKU]= PO.[Staples_Item_No] and [RESTSTATE] = PO.[Ship_To_State] and [RESTFMTO] ='F' group by [RESTSTATE])
+	  ,Zip_Staples                  =(select [RESTSKU] FROM [SandBox].[DBO].[P2 and P3 Corp_Restricted Items]  WHERE [RESTSKU]= PO.[Staples_Item_No] and [RESTZIPCD] = po.[ZipCode] and [RESTFMTO] ='F' group by [RESTSKU])
+	  ,State_ESS                    =(select [Staples Xref] from [SandBox].[DBO].[P2 and P3 State-ESS]   where [Staples Xref]  = PO.[Staples_Item_No] or [Staples Xref] = PO.[Shipped_Item_Id] group by [Staples Xref])
+	  ,SKU_ExpiryDate               =(select distinct [OOS_EXPIRY_DATE] from [SandBox].[DBO].[P3 SKU Expirydate] where po.[Shipped_Item_Id]=[ITEM_ID] or po.[Staples_Item_no]=[ITEM_ID])-- and [ITEM_ID] <> '062462')
+	  ,[Quantity Break Items]       =ISNULL(QB.[NAV ID],'')
+	  ,[Quill SKU]					=ISNULL(QS.[Quill SKU],'')
+	  ,[Ebay Sub]                   =(Select [Staples Sku] From [Sandbox].[dbo].[P3 Ebay Sub] where convert(varchar,sku) = po.nav_id)
+	  ,WBTEST                       =case when po.nav_id in ('3327115','3327112','3327111','3327110','3327109',	'3327100',	'3327064',	'3327061',	'3327055',	'3327052',	'3327044',	'3327033') then po.NAV_Id else '' end
+	  ,[DS Allowance]               =ISNULL((DS.[DS Allowance]*100),'')
+	  ,[Vendor No]	                =(select [Vendor No#] FROM [SandBox].[DBO].[P3 Dropship Vendors]    where convert(varchar,[Internal No#])=PO.NAV_id)
+	  ,[Vendor Name]                =(select [Vendor Name] FROM [SandBox].[DBO].[P3 Dropship Vendors]   where convert(varchar,[Internal No#])=PO.NAV_id)
+	  ,[Vendor Contact]             =(select [Vendor Contact]FROM [SandBox].[DBO].[P3 Dropship Vendors] where convert(varchar,[Internal No#])=PO.NAV_id)
+	  ,[SOPT]                       =(select [SOPT]FROM [Sandbox].[DBO].[P3 Dropship Vendors]           where convert(varchar,[Internal No#])=PO.NAV_id)
+	 -- ,[KC Paper Problems]			=ISNULL(KC.[SKU],'')	  
+	 -- ,[Pendamic Item]				=isnull(pd.[sku],'')
+	  ,[2926] = (select top (1) [staples no#] from [sandbox].[DBO].[2926 items] where [staples no#] = po.staples_Item_No)
+	  ,[E-DONOTSELL]                =ISNULL(edn.[Staples_sku],'')
+	  ,[E-STAPLES-NSW]              =ISNULL(esn.[Staples_sku],'')
+	  ,[CAP]                        =(SELECT C.[NAV_ID] FROM SandBox.DBO.[P3 CAP] C WHERE convert(varchar,C.NAV_ID) = PO.NAV_Id)
+	  ,[Level_Of_Service]           =ISNULL(po.[Level_Of_Service],'')
+	  ,po.Scac
+	  ,po.Zone_Number
+      ,PO.[Unit_Cost]
+      ,PO.[Ext_Cost]
+	  ,PO_Margin					=(CASE  WHEN PO.[WhoelsalerName_Vendor#_FC#] LIKE '%UNITED%' THEN isnull(PO.[Unit_Price]*PO.[Quantity],'')
+											WHEN PO.[WhoelsalerName_Vendor#_FC#] LIKE '%SP R%' THEN ISNULL(PO.[Unit_Price]*PO.[Quantity],'')
+                                        	WHEN PO.[WhoelsalerName_Vendor#_FC#] LIKE '%FC%' THEN isnull(PO.[Unit_Price]*PO.[Quantity],'')
+											ELSE '' 
+											END) - PO.[Ext_Cost]
+	  ,PO_Cost_Ext					=ISNULL(PO.[PO_Cost_Ext],'')
+      ,PO.[Quantity]
+	  ,[PO Cost Modified]			= CASE WHEN PO.[WhoelsalerName_Vendor#_FC#] LIKE '%UNITED%' THEN EN.[Cost End  Price]
+										   ELSE '' 
+										   END
+	  ,EN.[Cost End  Price]	
+      ,[Accounting_location]		=ISNULL(PO.[Accounting_location],'')
+      ,PO.[Create_date]
+      ,PO.[SHIP_Date]
+      ,PO.[Delivery_date]
+	  ,[STP Net Cost]				= ISNULL(st.[Net Cost],'')
+	  ,[STP Net Cost GM %]			= CASE WHEN PO.[Unit_Price] = '0' then ''	  else ISNULL(1-(st.[Net Cost]/PO.[Unit_Price]),'')	  end
+	  ,[STP PO Cost]				= ISNULL(ST.[PO Cost],'')
+	  ,[STP PO Cost GM %]			= CASE WHEN PO.[Unit_Price] = '0' then ''     else ISNULL(1-(st.[PO Cost]/PO.[Unit_Price]),'')	  end
+	  ,[STP UOM]					= ISNULL(ST.[UOM],'')
+	  ,[ESS Net Cost]				= ISNULL(ES.[Dead Net Cost],'')
+	  ,[ESS Net Cost GM %]			= CASE WHEN PO.[Unit_Price] = '0' then ''	  else ISNULL(1-(ES.[Dead Net Cost]/PO.[Unit_Price]),'')  end
+	  ,[ESS UOM]					= ISNULL(ES.[Inv Uom],'')
+	  ,[SPR NET]					= ISNULL(SP.[Final SPR NET],'')
+	  ,[SPR Net Cost GM %]			= CASE WHEN PO.[Unit_Price] = '0' then ''	  else ISNULL(1-(SP.[Final SPR NET]/PO.[Unit_Price]),'')  end
+	  ,[SPR UOM]					= ISNULL(SP.[SPR selling unit of measure (SUOM)],'')
+	  ,[Ext Mer]					=  CASE WHEN PO.[WhoelsalerName_Vendor#_FC#] LIKE '%UNITED%'	OR  PO.[WhoelsalerName_Vendor#_FC#] LIKE '%ESS%'		THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											WHEN PO.[WhoelsalerName_Vendor#_FC#] LIKE '%SP R%'  OR  PO.[WhoelsalerName_Vendor#_FC#] LIKE '%S.P. R%'			THEN ISNULL(PO.[Unit_Price]*PO.[status_quantity],'')
+											WHEN PO.[WhoelsalerName_Vendor#_FC#] LIKE '%FC%'				THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											WHEN PO.[WhoelsalerName_Vendor#_FC#] not LIKE '%FC%'and PO.[WhoelsalerName_Vendor#_FC#] NOT LIKE '%SP R%' AND PO.[WhoelsalerName_Vendor#_FC#] not LIKE '%S.P. R%'and PO.[WhoelsalerName_Vendor#_FC#] not LIKE '%UNITED%' THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')   
+											ELSE '' END
+	  ,[Ext Net]					=  CASE WHEN PO.[WhoelsalerName_Vendor#_FC#] LIKE '%UNITED%'  OR  PO.[WhoelsalerName_Vendor#_FC#] LIKE '%ESS%'		THEN isnull(ES.[Dead Net Cost]*PO.[status_quantity],'')
+											WHEN PO.[WhoelsalerName_Vendor#_FC#] LIKE '%SP R%'	OR  PO.[WhoelsalerName_Vendor#_FC#] LIKE '%S.P. R%'		THEN ISNULL(SP.[Final SPR NET]*PO.[status_quantity],'')
+											WHEN PO.[WhoelsalerName_Vendor#_FC#] LIKE '%FC%'		THEN isnull(st.[Net Cost]*PO.[status_quantity],'')
+											WHEN PO.[WhoelsalerName_Vendor#_FC#] not LIKE '%FC%'and PO.[WhoelsalerName_Vendor#_FC#] not LIKE '%SP R%' AND PO.[WhoelsalerName_Vendor#_FC#] not LIKE '%S.P. R%' and  PO.[WhoelsalerName_Vendor#_FC#] not LIKE '%UNITED%'	 THEN isnull(st.[Net Cost]*PO.[status_quantity],'')
+											ELSE '' END
+	  ,[By Item]					=  CASE WHEN (PO.[WhoelsalerName_Vendor#_FC#] LIKE '%UNITED%' OR PO.[WhoelsalerName_Vendor#_FC#] LIKE '%ESS%')	   AND PO.[Unit_Price]<>'0' AND PO.[status_quantity]<>'0'	THEN isnull(1-((isnull(ES.[Dead Net Cost]*PO.[status_quantity],''))/(isnull(PO.[Unit_Price]*PO.[status_quantity],''))),'')
+											WHEN (PO.[WhoelsalerName_Vendor#_FC#] LIKE '%SP R%' OR PO.[WhoelsalerName_Vendor#_FC#] LIKE '%S.P. R%')    AND PO.[Unit_Price]<>'0' AND PO.[status_quantity]<>'0' THEN ISNULL(1-((ISNULL(SP.[Final SPR NET]*PO.[status_quantity],''))/(isnull(PO.[Unit_Price]*PO.[status_quantity],''))),'')
+											WHEN (PO.[WhoelsalerName_Vendor#_FC#] LIKE '%FC%'	)	   AND PO.[Unit_Price]<>'0' AND PO.[status_quantity]<>'0' THEN isnull(1-((isnull(st.[Net Cost]*PO.[status_quantity],''))/(isnull(PO.[Unit_Price]*PO.[status_quantity],''))),'')
+											WHEN PO.[WhoelsalerName_Vendor#_FC#]  not LIKE '%FC%' and PO.[WhoelsalerName_Vendor#_FC#] not LIKE '%SP R%' AND PO.[WhoelsalerName_Vendor#_FC#] not LIKE '%S.P. R%' and PO.[WhoelsalerName_Vendor#_FC#] not LIKE '%UNITED%' and PO.[WhoelsalerName_Vendor#_FC#] NOT LIKE '%ESS%' AND PO.[Unit_Price]<>'0' AND PO.[status_quantity]<>'0'THEN isnull(1-((isnull(st.[Net Cost]*PO.[status_quantity],''))/(isnull(PO.[Unit_Price]*PO.[status_quantity],''))),'')
+											ELSE '' END
+INTO 
+	#P3_Core_Tbl										 
+FROM 
+			  [SandBox].[dbo].[P2 SOMS Order Data]		PO
+	--LEFT JOIN #StaplesXref_Tbl							NI ON  NI.StaplesXrefSKU	= PO.[staples_Item_No] COLLATE Latin1_General_100_CS_AS
+	--													   AND  NI.r					= 1
+	 LEFT JOIN [SandBox].[dbo].[P3 STP NetCost]		ST ON  PO.[Staples_Item_No] = ST.[SKU]
+	 LEFT JOIN [SandBox].[dbo].[P3 ESS NetCost]		ES ON  PO.[Shipped_Item_Id] = ES.[Item Number]
+	 LEFT JOIN [SandBox].[dbo].[P3 ESS NEW POCost]	EN ON  PO.[Shipped_Item_Id]	= EN.[Item Number]
+	 LEFT JOIN #New_SPRnet_Tbl						SP ON  PO.[Shipped_Item_Id] = SP.[Stock Number]
+														  AND SP.r				= 1
+  -- LEFT JOIN [SandBox].[dbo].[P2 and p3 ESS class]		ESs ON  PO.[Shipped_Item_Id] = ESs.[WHLSR_ITEM_#]
+
+	 LEFT JOIN [SandBox].[DBO].[P2 and P3 Quantity break items] 
+													QB ON  QB.[NAV ID]			= PO.NAV_Id
+	 LEFT JOIN [SandBox].[DBO].[P2 and P3 Quill items] 
+													QS ON QS.[Quill SKU]		= PO.[Staples_Item_No]
+ --	LEFT JOIN [sandbox].[DBO].[2926 items]      oi      on oi.[staples no#]    = po.staples_Item_No
+ -- LEFT JOIN [SandBox].[DBO].[P3 KC paper problems] 
+ --													KC ON KC.[SKU]		        = PO.[Staples_Item_No]
+ --	LEFT JOIN [SandBox].[DBO].[P2 and P3 pendamics items] 
+  --													pd ON  pd.sku			    = PO.NAV_Id
+    LEFT JOIN [SandBox].[DBO].[p3 DS Allowance] 
+  													ds ON  ds.[NAV ID]			    = PO.NAV_Id
+    LEFT JOIN [SandBox].[DBO].[P2 and P3 E-DONOTSELL]
+												   EDN ON  PO.[Staples_Item_No] = EDN.[Staples_sku]
+    LEFT JOIN [SandBox].[DBO].[P2 and P3 E-STAPLES-NSW]
+												   EsN ON  PO.[Staples_Item_No] = Esn.[Staples_sku]
+UPDATE STATISTICS #P3_Core_Tbl
+;
+--select * from #P3_Core_Tbl --order by [Create_date];		
+--SELECT [WhoelsalerName_Vendor#_FC#] FROM [SandBox].[dbo].[P3 Order Data]											  
+--/*==========================================*/
+
+select 
+	   PO.[Staples_order_no]
+      ,PO.[External_Document_No]
+      ,PO.[Sell_to_Customer_no]
+	  ,po.[Vendor_PO#]
+      ,PO.[customer_name]
+      ,PO.[Ship_To_State]
+      ,PO.[ZipCode]
+      ,PO.[method_of_payment]
+      ,PO.[status]
+      ,PO.[Status_Description]
+      ,PO.[Original_Ordered_Qty]
+      ,PO.[status_quantity]
+      ,PO.[Ship_Node]
+      ,PO.[Unit_Price]
+      ,PO.[Merchandize$]
+      ,PO.[Marketplace_TAX]
+      ,PO.[staples_TAX]
+      ,PO.[Shipment_Type]
+      ,PO.[WhoelsalerName_Vendor#_FC#]
+	  ,PO.NAV_id
+      ,po.[staples_Item_No]
+	  --,PO.[Assortment External]
+      ,PO.[Shipped_Item_Id]
+      ,PO.[Vendor_Part_No]
+      ,PO.[EXTERNAL_ITEM_NO]
+	  ,po.[Item_Department]
+	  ,po.[Item_Division]
+	  ,po.[Item_Class]
+	  ,State_Staples = ISNULL(po.State_Staples,'')            
+	  ,Zip_Staples = isnull(po.Zip_Staples,'')               
+	  ,State_ESS = isnull(po.State_ESS,'')
+	  ,po.SKU_ExpiryDate
+	  ,PO.[Quantity Break Items]
+	  ,PO.[Quill SKU]
+	  ,po.[Ebay Sub]
+	  ,WBTEST = isnull(po.WBTEST,'')
+	  ,PO.[DS Allowance]
+	  ,[Vendor No] = isnull(po.[Vendor No],'')	                
+	  ,[Vendor Name] = isnull(po.[Vendor Name],'')              
+	  ,[Vendor Contact] = isnull(po.[Vendor Contact],'')            
+	  ,[SOPT] = isnull(po.[SOPT],'')
+	  ,[PPE] = case when po.NAV_id in ('3328092','3328091','3328090','3328093') then po.staples_Item_No else '' end -- PPE = PERSONAL PROTECTION EQUIPMENT
+	--  ,PO.[KC Paper Problems]
+	--  ,po.[Pendamic Item]
+	  ,[2926]= isnull(po.[2926],'')
+	  ,po.[E-DONOTSELL]
+	  ,po.[E-STAPLES-NSW]
+	  ,[CAP] = ISNULL(PO.[CAP],'')
+	  ,po.[Level_Of_Service]
+	  ,po.Scac
+	  ,po.Zone_Number
+      ,PO.[Unit_Cost]
+      ,PO.[Ext_Cost]
+	  ,PO.PO_Margin					
+	  ,PO.[PO_Cost_Ext]
+      ,PO.[Quantity]
+	  ,PO.[PO Cost Modified]			
+	  ,[PO Cost Modified Ext]		= CASE  WHEN LEFT(PO.[PO Cost Modified],3) <> '0' THEN ISNULL(PO.[Cost End  Price] * PO.[status_quantity],'')
+											ELSE ISNULL(PO.[PO_Cost_Ext],'')
+											END
+      ,PO.[Accounting_location]
+	  ,[Create_date]				=CONVERT(VARCHAR,PO.[Create_date],9) 
+      ,[SHIP_Date]					=CONVERT(VARCHAR,PO.[SHIP_Date],9)
+      ,[Delivery_date]				=CONVERT(VARCHAR,PO.[Delivery_date],9)
+	  ,PO.[STP Net Cost]				
+	  ,PO.[STP Net Cost GM %]			
+	  ,PO.[STP PO Cost]				
+	  ,PO.[STP PO Cost GM %]			
+	  ,PO.[STP UOM]					
+	  ,PO.[ESS Net Cost]				
+	  ,PO.[ESS Net Cost GM %]			
+	  ,PO.[ESS UOM]					
+	  ,PO.[SPR NET]					
+	  ,PO.[SPR Net Cost GM %]		
+	  ,PO.[SPR UOM]					
+	  ,[Ext Mer]	= CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	
+											
+	  ,[Ext Net]	= CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) =0		THEN isnull(po.[STP Net Cost]*PO.[status_quantity],'')
+											ELSE PO.[Ext Net] 
+											END			
+	 ,[By Item]	= CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) =0   AND PO.[Unit_Price]<>'0' AND PO.[status_quantity]<>'0' THEN isnull(1-((isnull(PO.[STP Net Cost]*PO.[status_quantity],''))/(isnull(PO.[Unit_Price]*PO.[status_quantity],''))),'')
+											ELSE PO.[By Item] 
+											END		
+	 ,Delivered = case when PO.Status_Description = 'Delivered' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+     ,Shipped = case when PO.Status_Description = 'Shipped' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											END
+     ,[Return Received] = case when PO.Status_Description = 'Return Received' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+	 ,Scratched = case when PO.Status_Description = 'Scratched' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+	 ,[Backordered From Node] = case when PO.Status_Description = 'Backordered From Node' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+	   ,[Draft Order Cancelled] = case when PO.Status_Description = 'Draft Order Cancelled' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+	   ,[Return Created] = case when PO.Status_Description = 'Return Created' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+	  ,Cancelled = case when PO.Status_Description = 'Cancelled' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+	  ,[Accepted For Fulfillment] = case when PO.Status_Description = 'Accepted For Fulfillment' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+	 ,[Shipment Picked and Packed] = case when PO.Status_Description = 'Shipment Picked and Packed' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+	 ,[Fraud Cancelled] = case when PO.Status_Description = 'Fraud Cancelled' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+	 ,[Sent For Fulfillment] = case when PO.Status_Description = 'Sent For Fulfillment' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+	 ,[Draft Order Created] = case when PO.Status_Description = 'Draft Order Created' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+	 ,[Sent To Node] = case when PO.Status_Description = 'Sent To Node' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+	 ,Scheduled = case when PO.Status_Description = 'Scheduled' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+     ,Created = case when PO.Status_Description = 'Created' THEN (CASE WHEN Len(PO.[WhoelsalerName_Vendor#_FC#]) = 0	THEN isnull(PO.[Unit_Price]*PO.[status_quantity],'')
+											ELSE  PO.[Ext Mer]
+											END	)
+											Else '0'
+											End
+from
+	#P3_Core_Tbl PO
+
+order by 
+	PO.[Create_date]
+
+----SELECT * FROM [SandBox].[dbo].[P3 Order Data]	PO WHERE PO.[WhoelsalerName_Vendor#_FC#] = 'NULL%'  --AND PO.[WhoelsalerName_Vendor#_FC#] LIKE '%S.P. R%'	--AND PO.[Unit_Price]<>'0' AND PO.[Quantity]<>'0'
+----select ni.StaplesXrefsku, ni.[Our Item NO_] FROM NAVRep.NAVRep.dbo.[Hi Touch$Item] NI WHERE NI.StaplesXrefSku = '24394045'
