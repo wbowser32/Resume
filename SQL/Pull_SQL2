@@ -1,0 +1,82 @@
+Select distinct 
+
+'HiTouch Pillar 2 COMS' ReportTitle,
+OH.OHCRDT CreateDate,
+--CAST(CAST(CAST(OH.OHCRDT AS INT) AS VARCHAR(8)) AS DATE) CREATEDate,
+ORD.ORSHDT ShipDate,
+OH.OHCRTM CreateTime,
+OH.OHCUST CustomerNumber,
+OH."OHORD#" OrderNumber,
+OH.OHCPO# PONumber,
+OH.OHCPOR PORelease,
+OH.OHLINK Link, 
+SCA.CRNAME Carrier,
+OH.OHCLDT Ord_Close_date,
+OH.OHCLTM Ord_Close_time,
+oh.OHHRDT Ord_Hold_release_date,
+oh.OHHRTM Ord_Hold_release_time,
+ODD.ODSHP# Shipment,
+ODD.ODDSKU OrderedSKU,
+ODD.ODSSKU ShipSku,
+coalesce(I.IIDESC, WI.WIDESC) As ItemDescription,
+(select IDP.dptnam from PRD_USD_OPV.SUNBEAM_MMBASLIB_INVDPT_V IDP WHERE idp.idept = i.iidept and IDP.ISDEPT= 0 AND IDP.ICLAS = 0 AND IDP.ISCLAS=0 )    AS Item_Department,
+(select IDP.dptnam from PRD_USD_OPV.SUNBEAM_MMBASLIB_INVDPT_V IDP WHERE idp.idept = i.iidept and IDP.ISDEPT= i.iisdpt AND IDP.ICLAS = 0 AND IDP.ISCLAS=0 and IDP.Dptpln  <>'†††††     ' )      AS Item_Division,
+(select IDP.dptnam from PRD_USD_OPV.SUNBEAM_MMBASLIB_INVDPT_V IDP WHERE idp.idept = i.iidept and IDP.ISDEPT= i.iisdpt AND IDP.ICLAS = i.iiclas AND IDP.ISCLAS=0 and IDP.Dptpln  <>'†††††     ')         AS Item_Class,
+ODD.ODOQTY QTYOrdered,
+ODD.ODSQTY QTYShipped,
+ODD.ODEPRC ExpectedPrice,
+--ODD.ODaPRC Actualprice,
+ODD.ODDCST DemandSkuCost,
+OH.OHTTO$ TaxTotal,
+OH."OHOTO$" DeliveryTotal,
+ORD.ORHLOC HUB,
+ORD.ORPLOC FC,
+oh.OHOSTA OrderStatus,
+ODD.ODSTAT OrderlineStatus,
+ORD.ORPSTA ShipmentStatus,
+ord.ORDROP Shipment_DropshipFlag,
+odd.ODDROP Line_DropshipFlag,
+--SCN.Onctyp,
+--SCN.Oncode,
+--scn.ONINST COMMENTLINE,
+--CASE WHEN ORD.ORPSTA ='CAN' THEN (select scn.oninst from prd_usd_opv.sunrise_sfbaslib_sfordn_v  scn where scn.Onord# = OH.OHORD# and scn.Onctyp ='CO'and scn.Onseq#=(select MAX(ONSEQ#) from prd_usd_opv.sunrise_sfbaslib_SFORDN_v where Onord# = OH.OHORD# and Onctyp ='CO')) 
+--     ELSE '' END AS CO_Comment_LINE,
+--CASE WHEN ORD.ORPSTA ='CAN' THEN (select scn.ONCRUS from prd_usd_opv.sunrise_sfbaslib_sfordn_v  scn where scn.Onord# = OH.OHORD# and scn.Onctyp ='CO'and scn.Onseq#=(select MAX(ONSEQ#) from prd_usd_opv.sunrise_sfbaslib_SFORDN_v where Onord# = OH.OHORD# and Onctyp ='CO')) 
+--     ELSE '' END AS CO_Userid,
+case when ODD.ODSKMA in ('US', 'IM', 'SR', 'AZ') Then ODD.ODSKMA|| ' ' || ODD."ODFAC#" Else 'FC'|| ' ' || ORD.ORPLOC End As PickLocation,
+OH.OHORDM OrderMethod,
+ORD.ORSDDT ScheduledDeliveryDate,
+OH.OHSHID ShipToID,
+SH.CADEL DeliveryMethod,
+SFC.CCNAM CustomerName,
+SH.CANAME ShippingCustomerName,
+OH.OHOBFN|| ' ' || OH.OHOBLN OrderByName,
+SH.CASAD1 Address1,
+SH.CASAD2 Address2,
+OH.OHSAD3 Address3,
+SH.cascty City,
+SH.Cassta State,
+SH.CasZPP|| ' ' || SH.CasZPS ZIP,
+OH.OHOTO$ OrderTotal
+From 
+     PRD_USD_OPV.SUNRISE_SFBASLIB_SFORDH_V As OH 
+Join PRD_USD_OPV.SUNRISE_SFBASLIB_SFORDD_V As ODD On OH."OHORD#" = ODD."ODORD#" And OH.OHLINK = ODD.ODLINK 
+Join PRD_USD_OPV.SUNRISE_SFBASLIB_SFORDR_V As ORD On OH."OHORD#" = ORD."ORORD#" And OH.OHLINK = ORD.ORLINK and ODD.ODSHP# = ORD.ORSHP#
+Join PRD_USD_OPV.SUNRISE_SFBASLIB_SFCUST_V As SFC on OH.OHCUST = SFC.CCCUST and OH.OHDIV = SFC.CCDIV
+join PRD_USD_OPV.SUNRISE_SFBASLIB_SFSHTO_V as SH on OH.ohcust = SH.cacust and OH.OHSHID = SH.cashid and OH.OHSHTO = SH."CASHP#"
+Join PRD_USD_OPV.SUNRISE_SFBASLIB_SFAXRF_V as AX on OH.OHCUST = AX.AXCUST -- axc table
+Left Join PRD_USD_OPV.SUNRISE_SFBASLIB_SFITEM_V as I On ODD.ODSSKU = to_char(I."IISKU#") -- stock
+Left Join PRD_USD_OPV.SUNRISE_SFBASLIB_SFWITM_V as WI On WI.WIITEM = ODD.ODSSKU -- wholesaler
+left join PRD_USD_OPV.SUNRISE_SFBASLIB_SCCARR_V as SCA on SCA.CRLOC# = ORD.ORPLOC and SCA.crcarr = ord.ORCARR
+Where 1=1
+And OH.OHCRDT between
+ (select
+                           cast(cast(fsp_strt_dt as date format 'yyyymmdd') as varchar(8)) 
+                       from  PRD_GDW_BUV.FSC_CAL_V
+                            where  cal_dt = current_date) 
+  and
+  cast(cast(Current_Date+1 as date format 'yyyymmdd') as varchar(8))
+AND AX.AXCNAM = 'HTCH2' 
+
+Order By
+CreateDate,OrderNumber
