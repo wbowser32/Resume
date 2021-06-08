@@ -1,0 +1,147 @@
+
+Select  distinct
+                                ohe.text_11                   AS Pillar#,
+                                
+                                OH.order_no                   As Staples_order_no, 
+
+                                oh.CUSTOMER_PO_NO             AS External_Document_No,  
+
+                                oh.bill_to_id                 AS Sell_to_Customer_no, 
+                                
+                                YOH.ORDER_NO                  AS Vendor_PO# ,
+
+                                oh.EXTN_CUST_COMPANY_NAME     AS customer_name, 
+
+                                opi.state                     AS Ship_To_State, 
+
+                                opi.zip_code                  AS ZipCode, 
+
+                                yp.payment_Type               AS method_of_payment, 
+
+                                orstat.status                 AS status, 
+
+                                ys.description                as Status_Description, 
+
+                                ol.original_ordered_qty, 
+
+                                case when orstat.status  in ('3700.01','3700.02','3700.50')then orstat.status_quantity*(-1)
+                                else orstat.status_quantity end AS status_quantity, 
+
+                                ssd.ship_node                 as Ship_Node, 
+                                
+                                ol.unit_price,                                
+                                
+                                ol.unit_price*ol.Ordered_Qty  AS Merchandize$, 
+
+                                ole.decimal_3                 AS Marketplace_TAX, 
+
+                                ol.tax                        AS staples_TAX, 
+
+                                ssd.shipment_type             AS Shipment_Type, 
+
+                                ysn.description               AS WhoelsalerName_Vendor#_FC#, 
+                                
+                                ole.Text_19                   AS NAV_Id,
+
+                                ol.item_id                    AS staples_Item_No, 
+                                
+                                ssd.Shipped_Item_Id,
+                                
+                                ol.extn_vendor_part_number    AS Vendor_Part_No,
+                                                      
+                                ol.customer_item              AS EXTERNAL_ITEM_NO, 
+                            
+                                (Select IDP.dptnam from PRD_USD_OPV.SUNBEAM_MMBASLIB_INVDPT_V IDP WHERE idp.idept = i.Iidept and IDP.ISDEPT = 0        AND IDP.ICLAS = 0        AND IDP.ISCLAS=0 )    AS Item_Department,
+                                
+                                (select IDP.dptnam from PRD_USD_OPV.SUNBEAM_MMBASLIB_INVDPT_V IDP WHERE idp.idept = i.Iidept and idp.isdept = i.iisdpt AND IDP.ICLAS = 0        AND IDP.ISCLAS=0 AND IDP.Dptpln  <>'†††††     ')      AS Item_Division,
+                             
+                                (select IDP.dptnam from PRD_USD_OPV.SUNBEAM_MMBASLIB_INVDPT_V IDP WHERE idp.idept = i.Iidept AND idp.isdept = i.iisdpt AND IDP.ICLAS = i.iiclas AND IDP.ISCLAS=0 and IDP.Dptpln  <>'†††††     ')         AS Item_Class,
+                     
+                                ol.Level_Of_Service,
+                                
+                              --  sh.Tracking_Num,
+                                
+                              --  (select sh.tracking_num from prd_usd_opv.CUSTEXO_CEX01_OWN_EPTS_SHIPMENT_V sh where sh.order_num = oh.order_no and ol.Level_Of_Service= 'SFP')as sfp_tracking_num ,
+                                
+                                ssd.Scac,
+                                
+                                ssd.Zone_Number,
+                                
+                                ol.Unit_Cost,
+                                
+                                ol.unit_cost * ol.ordered_Qty AS Ext_Cost,
+                                
+                                ol.unit_cost * orstat.status_quantity AS PO_Cost_Ext,
+                                
+                                ol.ordered_Qty                AS Quantity, 
+
+                                ol.extn_accounting_loc        AS Accounting_location, 
+
+                                oh.createts                   AS Create_date,                             
+                  
+                                ssd.ship_date                 AS SHIP_Date, 
+
+                                ssd.del_date                  AS Delivery_date 
+                                                        
+                                
+               FROM PRD_USD_OPV.SOMS_YFS_ORDER_HEADER_V oh  
+
+                                INNER JOIN PRD_USD_OPV.SOMS_YFS_ORDER_LINE_V ol 
+                                                ON oh.order_header_key = ol.order_header_key  
+
+                                LEFT OUTER JOIN PRD_USD_OPV.SOMS_YFS_ORDER_release_status_V orstat 
+                                               ON ol.order_line_key = orstat.order_line_key  
+                                               AND orstat.status_quantity>0 
+
+                                LEFT OUTER JOIN PRD_USD_OPV.SOMS_YFS_PERSON_INFO_V opi 
+                                                ON oh.ship_to_key = opi.person_info_key   
+
+                                LEFT OUTER JOIN PRD_USD_OPV.SOMS_SPLS_SHIPMENT_DETAILS_V ssd 
+                                                ON ol.order_line_key=ssd.orderline_key 
+                                                and ssd.status NOT IN('InActive') 
+                                                
+                                LEFT OUTER JOIN PRD_USD_OPV.SOMS_YFS_ORDER_HEADER_EXTENSION_V OHE
+                                                ON OHE.Order_Header_Key = oh.Order_Header_Key
+
+                                LEFT OUTER JOIN PRD_USD_OPV.SOMS_YFS_ORDER_LINE_EXTENSION_V ole 
+                                                ON ol.order_line_key=ole.order_line_key  
+
+                                LEFT OUTER JOIN PRD_USD_OPV.SOMS_YFS_PAYMENT_V yp 
+                                                ON oh.order_header_key=yp.order_header_key  
+
+                                LEFT OUTER JOIN PRD_USD_OPV.SOMS_YFS_STATUS_V ys 
+                                                ON  orstat.status=ys.status  
+
+                                LEFT OUTER JOIN PRD_USD_OPV.SOMS_YFS_SHIP_NODE_V ysn  
+                                                ON ssd.ship_node=trim(ysn.ship_node) 
+                                                
+                                LEFT OUTER JOIN PRD_USD_OPV.SUNRISE_MMBASLIB_SDITEM_V  I 
+                                                On ssd.shipped_Item_id = to_char(I."IISKU#")
+                                                
+                                LEFT OUTER JOIN PRD_USD_OPV.SOMS_YFS_ORDER_LINE_V YOL 
+                                                ON  YOL.chained_from_order_header_key = oh.Order_Header_Key
+                                                                                                  
+                                LEFT OUTER JOIN  PRD_USD_OPV.SOMS_YFS_ORDER_HEADER_V YOH 
+                                                ON YOH.ordeR_header_key    =YOL.Order_Header_Key       
+                                               
+WHERE  
+      oh.extn_order_channel = 'HITOUCH' 
+      
+      and ohe.Text_11       = 'HTCH2'
+
+  AND oh.document_type      = '0001'  
+
+  AND ys.process_type_key   = 'ORDER_FULFILLMENT'  
+  
+  and oh.order_header_key between  --'20210131' and '20210227'
+ 
+  (select
+                           cast(cast(fsp_strt_dt as date format 'yyyymmdd') as varchar(8)) 
+                       from  PRD_GDW_BUV.FSC_CAL_V
+                            where  cal_dt = current_date) 
+  and
+  
+  cast(cast(Current_Date+1 as date format 'yyyymmdd') as varchar(8))
+  
+  order by oh.order_no;
+  
